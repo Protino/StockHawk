@@ -13,6 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import com.example.sam_chordas.stockhawk.R;
+import com.example.sam_chordas.stockhawk.service.StockTaskService;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.OneoffTask;
+import com.google.android.gms.gcm.PeriodicTask;
+import com.google.android.gms.gcm.Task;
+import com.google.android.gms.gcm.TaskParams;
 
 public class MyStocksActivity extends AppCompatActivity
     implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -27,6 +33,8 @@ public class MyStocksActivity extends AppCompatActivity
    */
   private CharSequence mTitle;
 
+  private int taskId = 0;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -40,6 +48,38 @@ public class MyStocksActivity extends AppCompatActivity
     mNavigationDrawerFragment.setUp(
         R.id.navigation_drawer,
         (DrawerLayout) findViewById(R.id.drawer_layout));
+
+    //long start = 0L;
+    //long end = start + 5L;
+    //String oneOffTag = "One Off | " + taskId++ + ": " + start + ", " + end;
+    //
+    //OneoffTask oneoffTask = new OneoffTask.Builder()
+    //    .setService(StockTaskService.class)
+    //    .setTag(oneOffTag)
+    //    .setExecutionWindow(start, end)
+    //    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+    //    .setRequiresCharging(false)
+    //    .build();
+    //GcmNetworkManager.getInstance(this).schedule(oneoffTask);
+
+    StockTaskService stockTaskService = new StockTaskService();
+    stockTaskService.onRunTask(new TaskParams("Init"));
+
+    long period = 3600L;
+    long flex = 10L;
+    String periodicTag = "Periodic | " + taskId++ + ": " + period + "s, f: " + flex;
+
+
+    PeriodicTask periodicTask = new PeriodicTask.Builder()
+        .setService(StockTaskService.class)
+        .setPeriod(period)
+        .setFlex(flex)
+        .setTag(periodicTag)
+        .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+        .setRequiresCharging(false)
+        .build();
+
+    GcmNetworkManager.getInstance(this).schedule(periodicTask);
   }
 
   @Override
