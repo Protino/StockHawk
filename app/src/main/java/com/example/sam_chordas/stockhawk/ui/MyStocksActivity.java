@@ -1,11 +1,14 @@
 package com.example.sam_chordas.stockhawk.ui;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import com.example.sam_chordas.stockhawk.R;
+import com.example.sam_chordas.stockhawk.service.ResponseReceiver;
+import com.example.sam_chordas.stockhawk.service.StockIntentService;
 import com.example.sam_chordas.stockhawk.service.StockTaskService;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.OneoffTask;
@@ -34,6 +39,7 @@ public class MyStocksActivity extends AppCompatActivity
   private CharSequence mTitle;
 
   private int taskId = 0;
+  private ResponseReceiver receiver;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +55,16 @@ public class MyStocksActivity extends AppCompatActivity
         R.id.navigation_drawer,
         (DrawerLayout) findViewById(R.id.drawer_layout));
 
-    //long start = 0L;
-    //long end = start + 5L;
-    //String oneOffTag = "One Off | " + taskId++ + ": " + start + ", " + end;
-    //
-    //OneoffTask oneoffTask = new OneoffTask.Builder()
-    //    .setService(StockTaskService.class)
-    //    .setTag(oneOffTag)
-    //    .setExecutionWindow(start, end)
-    //    .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
-    //    .setRequiresCharging(false)
-    //    .build();
-    //GcmNetworkManager.getInstance(this).schedule(oneoffTask);
+    Intent intent = new Intent(this, StockIntentService.class);
+    intent.putExtra("tag", "init");
+    startService(intent);
+    Log.d(MyStocksActivity.class.getSimpleName(), "here");
 
-    StockTaskService stockTaskService = new StockTaskService();
-    stockTaskService.onRunTask(new TaskParams("Init"));
+    IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
+    filter.addCategory(Intent.CATEGORY_DEFAULT);
+    receiver = new ResponseReceiver();
+    registerReceiver(receiver, filter);
+
 
     long period = 3600L;
     long flex = 10L;

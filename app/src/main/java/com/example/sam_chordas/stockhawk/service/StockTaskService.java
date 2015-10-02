@@ -1,9 +1,8 @@
 package com.example.sam_chordas.stockhawk.service;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import com.example.sam_chordas.stockhawk.StocksAPI;
-import com.example.sam_chordas.stockhawk.data.SharedPreferencesManager;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
@@ -21,6 +20,7 @@ public class StockTaskService extends GcmTaskService{
   public SharedPreferences mSharedPreferences;
 
   OkHttpClient client = new OkHttpClient();
+
   String fetchData(String url) throws IOException{
     Request request = new Request.Builder()
         .url(url)
@@ -36,7 +36,6 @@ public class StockTaskService extends GcmTaskService{
 //    mSharedPreferences = SharedPreferencesManager.getSharedPreferences();
     StringBuilder urlStringBuilder = new StringBuilder();
     String urlString;
-    StocksAPI stocksAPI= new StocksAPI();
     String getResponse;
     int result = GcmNetworkManager.RESULT_FAILURE;
     try {
@@ -52,7 +51,7 @@ public class StockTaskService extends GcmTaskService{
     if (urlStringBuilder != null){
       urlString = urlStringBuilder.toString();
       try{
-        getResponse = stocksAPI.fetchData(urlString);
+        getResponse = fetchData(urlString);
         Log.i(StockTaskService.class.getSimpleName(), "STOCK JSON: " + getResponse);
         result = GcmNetworkManager.RESULT_SUCCESS;
       } catch (IOException e){
@@ -63,4 +62,5 @@ public class StockTaskService extends GcmTaskService{
 
     return result;
   }
+
 }
