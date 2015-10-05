@@ -1,4 +1,4 @@
-package com.example.sam_chordas.stockhawk.ui;
+package com.sam_chordas.android.stockhawk.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;

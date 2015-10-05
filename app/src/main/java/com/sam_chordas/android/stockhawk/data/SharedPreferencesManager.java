@@ -1,4 +1,4 @@
-package com.example.sam_chordas.stockhawk.data;
+package com.sam_chordas.android.stockhawk.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;

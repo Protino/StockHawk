@@ -1,6 +1,5 @@
-package com.example.sam_chordas.stockhawk.service;
+package com.sam_chordas.android.stockhawk.service;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;

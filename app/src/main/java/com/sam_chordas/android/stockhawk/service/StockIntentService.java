@@ -1,4 +1,4 @@
-package com.example.sam_chordas.stockhawk.service;
+package com.sam_chordas.android.stockhawk.service;
 
 import android.app.IntentService;
 import android.content.Intent;
