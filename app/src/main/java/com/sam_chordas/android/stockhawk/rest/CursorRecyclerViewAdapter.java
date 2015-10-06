@@ -27,7 +27,7 @@ public abstract class CursorRecyclerViewAdapter <VH extends RecyclerView.ViewHol
     }
   }
 
-  public Cursor getmCursor(){
+  public Cursor getCursor(){
     return mCursor;
   }
 
