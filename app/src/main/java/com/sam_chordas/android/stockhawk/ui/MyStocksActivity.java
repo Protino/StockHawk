@@ -9,9 +9,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
-import com.example.sam_chordas.stockhawk.R;
 //import com.example.sam_chordas.stockhawk.service.ResponseReceiver;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -56,14 +56,8 @@ public class MyStocksActivity extends AppCompatActivity{
     FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.attachToRecyclerView(recyclerView);
 
-    //mNavigationDrawerFragment = (NavigationDrawerFragment)
-    //    getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
     mTitle = getTitle();
 
-    // Set up the drawer.
-    //mNavigationDrawerFragment.setUp(
-    //    R.id.navigation_drawer,
-    //    (DrawerLayout) findViewById(R.id.drawer_layout));
 
     Intent intent = new Intent(this, StockIntentService.class);
     intent.putExtra("tag", "init");
