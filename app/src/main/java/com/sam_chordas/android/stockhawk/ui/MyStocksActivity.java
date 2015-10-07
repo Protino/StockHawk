@@ -9,7 +9,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 //import com.example.sam_chordas.stockhawk.service.ResponseReceiver;
@@ -30,8 +32,8 @@ public class MyStocksActivity extends AppCompatActivity{
    * Used to store the last screen title. For use in {@link #restoreActionBar()}.
    */
   private CharSequence mTitle;
-
   private int taskId = 0;
+  private Intent mServiceIntent;
   //private ResponseReceiver receiver;
 
   @Override
@@ -53,16 +55,24 @@ public class MyStocksActivity extends AppCompatActivity{
         new LinearLayoutManager(recyclerView.getContext())
     );
 
+    QuoteCursorAdapter quoteCursorAdapter = new QuoteCursorAdapter(this, null);
+    recyclerView.setAdapter(quoteCursorAdapter);
+
+    mServiceIntent = new Intent(this, StockIntentService.class);
+
     FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.attachToRecyclerView(recyclerView);
+    fab.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        mServiceIntent.putExtra("tag", "add");
+        startService(mServiceIntent);
+      }
+    });
 
     mTitle = getTitle();
 
-
-    Intent intent = new Intent(this, StockIntentService.class);
-    intent.putExtra("tag", "init");
-    startService(intent);
-    Log.d(MyStocksActivity.class.getSimpleName(), "here");
+    mServiceIntent.putExtra("tag", "init");
+    startService(mServiceIntent);
 
     //IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
     //filter.addCategory(Intent.CATEGORY_DEFAULT);
