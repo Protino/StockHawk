@@ -18,7 +18,7 @@
       android:id="@+id/fab"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_ravity="bottom|right"
+      android:layout_gravity="bottom|right"
       android:src="@drawable/ic_action_content_new"
       android:layout_margin="16dp"
       fab:layout_anchor="recycler_view"
@@ -27,9 +27,8 @@
       fab:layout_anchorGravity="bottom|right|end"
       fab:fab_colorNormal="@color/material_blue_500"
       fab:fab_colorPressed="@color/material_blue_600"
-      fab:fab_colorRipple="@color/ripple"/>
-
-
+      fab:fab_colorRipple="@color/ripple"
+      />
 
 
   <!-- android:layout_gravity="start" tells DrawerLayout to treat
