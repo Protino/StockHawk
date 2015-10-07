@@ -15,8 +15,8 @@
     <item name="android:textStyle">bold</item>
   </style>
   <style name="StockSymbolTextStyle">
-    <item name="textStyle">bold</item>
-    <item name="textAllCaps">true</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textAllCaps">true</item>
   </style>
 
 </resources>
