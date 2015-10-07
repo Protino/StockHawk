@@ -18,13 +18,15 @@
       android:id="@+id/fab"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_ravity="bottom|right"
       android:src="@drawable/ic_action_content_new"
       android:layout_margin="16dp"
+      fab:layout_anchor="recycler_view"
       fab:fab_type="normal"
       fab:fab_shadow="true"
-      fab:layout_layoutGravity="bottom|right"
-      fab:fab_colorNormal="@color/primary"
-      fab:fab_colorPressed="@color/primary_pressed"
+      fab:layout_anchorGravity="bottom|right|end"
+      fab:fab_colorNormal="@color/material_blue_500"
+      fab:fab_colorPressed="@color/material_blue_600"
       fab:fab_colorRipple="@color/ripple"/>
 
 
