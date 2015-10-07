@@ -4,7 +4,7 @@
   <style name="AppTheme"
       parent="Theme.AppCompat">
       <item name="colorPrimary">@color/material_blue_500</item>
-      <item name="colorPrimaryDark">@color/material_blue_600</item>
+      <item name="colorPrimaryDark">@color/material_blue_700</item>
     <!-- Customize your theme here. -->
   </style>
 
