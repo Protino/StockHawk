@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
+import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
 public class MyStocksActivity extends AppCompatActivity{
 
@@ -34,6 +36,7 @@ public class MyStocksActivity extends AppCompatActivity{
   private CharSequence mTitle;
   private int taskId = 0;
   private Intent mServiceIntent;
+  private ItemTouchHelper mItemTouchHelper;
   //private ResponseReceiver receiver;
 
   @Override
@@ -68,6 +71,10 @@ public class MyStocksActivity extends AppCompatActivity{
         startService(mServiceIntent);
       }
     });
+
+    ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(quoteCursorAdapter);
+    mItemTouchHelper = new ItemTouchHelper(callback);
+    mItemTouchHelper.attachToRecyclerView(recyclerView);
 
     mTitle = getTitle();
 
