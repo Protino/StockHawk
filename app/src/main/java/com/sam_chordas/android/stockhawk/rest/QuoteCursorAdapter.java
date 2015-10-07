@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
@@ -22,17 +23,18 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     implements ItemTouchHelperAdapter{
   private Context mContext;
   //private final OnStartDragListener mDragListener;
+  private boolean isPercent;
   public QuoteCursorAdapter(Context context, Cursor cursor){
     super(context, cursor);
     //mDragListener = dragListener;
     mContext = context;
   }
 
-  public static class ViewHolder extends RecyclerView.ViewHolder{
-    public ViewHolder(View view){
-      super(view);
-    }
-  }
+  //public static class ViewHolder extends RecyclerView.ViewHolder{
+  //  public ViewHolder(View view){
+  //    super(view);
+  //  }
+  //}
 
   @Override
   public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
@@ -43,7 +45,22 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   }
 
   @Override
-  public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor){
+  public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor){
+    viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
+    viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
+    viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
+    isPercent = true;
+    viewHolder.change.setOnClickListener(new View.OnClickListener(){
+      @Override public void onClick(View v) {
+        if (isPercent) {
+          viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("value_change")));
+        }
+        else{
+          viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
+        }
+        isPercent = !isPercent;
+      }
+    });
   }
 
   @Override public boolean onItemMove(int fromPosition, int toPosition) {
@@ -58,10 +75,16 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     return super.getItemCount();
   }
 
-  public static class ItemViewHolder extends RecyclerView.ViewHolder
+  public static class ViewHolder extends RecyclerView.ViewHolder
       implements ItemTouchHelperViewHolder{
-    public ItemViewHolder(View itemView){
+    public final TextView symbol;
+    public final TextView bidPrice;
+    public final TextView change;
+    public ViewHolder(View itemView){
       super(itemView);
+      symbol = (TextView) itemView.findViewById(R.id.stock_symbol);
+      bidPrice = (TextView) itemView.findViewById(R.id.bid_price);
+      change = (TextView) itemView.findViewById(R.id.change);
     }
 
     @Override
