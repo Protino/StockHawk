@@ -111,6 +111,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     GcmNetworkManager.getInstance(this).schedule(periodicTask);
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+  }
+
 
 
   //@Override

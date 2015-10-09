@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.RemoteException;
 import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -31,6 +30,8 @@ public class StockTaskService extends GcmTaskService{
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
 
+  public StockTaskService(){}
+
   public StockTaskService(Context context){
     mContext = context;
   }
@@ -51,6 +52,7 @@ public class StockTaskService extends GcmTaskService{
     }
     String symbols = null;
     if (params.getTag().equals("init") || params.getTag().equals("periodic")){
+      Log.i(LOG_TAG, "query");
      initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI, new String []{QuoteColumns.SYMBOL},
           QuoteColumns.ISCURRENT +" = ?", new String[]{"1"}, null);
       if (initQueryCursor != null){
@@ -83,8 +85,8 @@ public class StockTaskService extends GcmTaskService{
           ContentValues contentValues = new ContentValues();
           // update ISCURRENT to 0 (false) so new data is current
           contentValues.put(QuoteColumns.ISCURRENT, 0);
-          this.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues, null, null);
-          this.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+          mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues, null, null);
+          mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
               Utils.quoteJsonToContentVals(getResponse));
         }catch (RemoteException | OperationApplicationException e){
           Log.e(LOG_TAG, "Error applying batch insert", e);
