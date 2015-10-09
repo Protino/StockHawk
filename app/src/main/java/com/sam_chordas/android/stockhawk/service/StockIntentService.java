@@ -22,6 +22,5 @@ public class StockIntentService extends IntentService {
     Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
     StockTaskService stockTaskService = new StockTaskService();
     stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag")));
-
   }
 }

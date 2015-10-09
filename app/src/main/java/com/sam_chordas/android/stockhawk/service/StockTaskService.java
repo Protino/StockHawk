@@ -1,10 +1,14 @@
 package com.sam_chordas.android.stockhawk.service;
 
-import android.content.SharedPreferences;
+import android.content.OperationApplicationException;
+import android.net.Uri;
+import android.os.RemoteException;
 import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -16,7 +20,7 @@ import java.net.URLEncoder;
  * Created by sam_chordas on 9/30/15.
  */
 public class StockTaskService extends GcmTaskService{
-  public SharedPreferences mSharedPreferences;
+  private String LOG_TAG = StockTaskService.class.getSimpleName();
 
   OkHttpClient client = new OkHttpClient();
 
@@ -53,11 +57,18 @@ public class StockTaskService extends GcmTaskService{
         getResponse = fetchData(urlString);
         Log.i(StockTaskService.class.getSimpleName(), "STOCK JSON: " + getResponse);
         result = GcmNetworkManager.RESULT_SUCCESS;
+
+        try {
+          getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+              Utils.quoteJsonToContentVals(getResponse));
+        }catch (RemoteException | OperationApplicationException e){
+          Log.e(LOG_TAG, "Error applying batch insert", e);
+        }
+
       } catch (IOException e){
         e.printStackTrace();
       }
     }
-
 
     return result;
   }
