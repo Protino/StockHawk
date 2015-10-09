@@ -1,21 +1,25 @@
 package com.sam_chordas.android.stockhawk.ui;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.QuoteColumns;
+import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
-//import com.example.sam_chordas.stockhawk.service.ResponseReceiver;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
@@ -23,7 +27,7 @@ import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
-public class MyStocksActivity extends AppCompatActivity{
+public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -37,6 +41,8 @@ public class MyStocksActivity extends AppCompatActivity{
   private int taskId = 0;
   private Intent mServiceIntent;
   private ItemTouchHelper mItemTouchHelper;
+  private static final int CURSOR_LOADER_ID = 0;
+  private QuoteCursorAdapter mCursorAdapter;
   //private ResponseReceiver receiver;
 
   @Override
@@ -52,14 +58,16 @@ public class MyStocksActivity extends AppCompatActivity{
                   Stetho.defaultInspectorModulesProvider(this))
               .build());
     }
+    StockTaskService stockTaskService = new StockTaskService();
 
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(
         new LinearLayoutManager(recyclerView.getContext())
     );
+    getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
-    QuoteCursorAdapter quoteCursorAdapter = new QuoteCursorAdapter(this, null);
-    recyclerView.setAdapter(quoteCursorAdapter);
+    mCursorAdapter = new QuoteCursorAdapter(this, null);
+    recyclerView.setAdapter(mCursorAdapter);
 
     mServiceIntent = new Intent(this, StockIntentService.class);
 
@@ -72,7 +80,7 @@ public class MyStocksActivity extends AppCompatActivity{
       }
     });
 
-    ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(quoteCursorAdapter);
+    ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
     mItemTouchHelper = new ItemTouchHelper(callback);
     mItemTouchHelper.attachToRecyclerView(recyclerView);
 
@@ -89,7 +97,7 @@ public class MyStocksActivity extends AppCompatActivity{
 
     long period = 3600L;
     long flex = 10L;
-    String periodicTag = "Periodic | " + taskId++ + ": " + period + "s, f: " + flex;
+    String periodicTag = "periodic";
 
 
     PeriodicTask periodicTask = new PeriodicTask.Builder()
@@ -162,6 +170,27 @@ public class MyStocksActivity extends AppCompatActivity{
     }
 
     return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
+        new String[]{ QuoteColumns.SYMBOL, QuoteColumns.BID, QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE},
+        QuoteColumns.ISCURRENT + " = ?",
+        new String[]{"1"},
+        null);
+  }
+
+  @Override
+  public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+    mCursorAdapter.swapCursor(data);
+
+
+  }
+
+  @Override
+  public void onLoaderReset(Loader<Cursor> loader){
+    mCursorAdapter.swapCursor(null);
   }
 
   /**
