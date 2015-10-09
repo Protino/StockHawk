@@ -46,9 +46,12 @@ public class StockTaskService extends GcmTaskService{
   @Override
   public int onRunTask(TaskParams params){
     Cursor initQueryCursor;
+    if (mContext == null){
+      mContext = this;
+    }
     String symbols = null;
     if (params.getTag().equals("init") || params.getTag().equals("periodic")){
-     initQueryCursor = this.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI, new String []{QuoteColumns.SYMBOL},
+     initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI, new String []{QuoteColumns.SYMBOL},
           QuoteColumns.ISCURRENT +" = ?", new String[]{"1"}, null);
       if (initQueryCursor != null){
         symbols = initQueryCursor.toString();

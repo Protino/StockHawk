@@ -58,7 +58,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                   Stetho.defaultInspectorModulesProvider(this))
               .build());
     }
-    StockTaskService stockTaskService = new StockTaskService();
 
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(
