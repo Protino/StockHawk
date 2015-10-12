@@ -13,12 +13,12 @@ public class QuoteColumns {
   public static final String _ID = "_id";
   @DataType(DataType.Type.TEXT) @NotNull
   public static final String SYMBOL = "symbol";
-  @DataType(DataType.Type.INTEGER) @NotNull
+  @DataType(DataType.Type.TEXT) @NotNull
   public static final String PERCENT_CHANGE = "percent_change";
-  @DataType(DataType.Type.INTEGER) @NotNull
+  @DataType(DataType.Type.TEXT) @NotNull
   public static final String CHANGE = "change";
-  @DataType(DataType.Type.INTEGER) @NotNull
-  public static final String BID = "trade_price";
+  @DataType(DataType.Type.TEXT) @NotNull
+  public static final String BIDPRICE = "bid_price";
   @DataType(DataType.Type.TEXT) @NotNull
   public static final String CREATED = "created";
   @DataType(DataType.Type.INTEGER) @NotNull

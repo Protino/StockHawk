@@ -25,16 +25,21 @@ public class Utils {
       jsonObject = new JSONObject(JSON);
       Log.i(LOG_TAG, "JSON: " + jsonObject.toString());
       if (jsonObject != null && jsonObject.length() != 0){
-        resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
+        Log.i(LOG_TAG, "here");
+        resultsArray = jsonObject.getJSONObject("query")
+            .getJSONObject("results").getJSONArray("quote");
+        Log.i(LOG_TAG, "resluts Array" + resultsArray);
         String queryTime = jsonObject.getJSONObject("query").getString("created");
+        Log.i(LOG_TAG, "query time " + queryTime);
         if (resultsArray != null && resultsArray.length() != 0){
           for (int i = 0; i < resultsArray.length(); i++){
             ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI);
             jsonObject = resultsArray.getJSONObject(i);
             String change = jsonObject.getString("Change");
+            Log.i(LOG_TAG, "change " + change);
             builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
-            builder.withValue(QuoteColumns.BID, jsonObject.getString("Bid"));
+            builder.withValue(QuoteColumns.BIDPRICE, jsonObject.getString("Bid"));
             builder.withValue(QuoteColumns.PERCENT_CHANGE, jsonObject.getString("ChangeinPercent"));
             builder.withValue(QuoteColumns.CHANGE, change);
             builder.withValue(QuoteColumns.CREATED, queryTime);
