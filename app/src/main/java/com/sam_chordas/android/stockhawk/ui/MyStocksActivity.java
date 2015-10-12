@@ -180,7 +180,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
     return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
-        new String[]{ QuoteColumns.SYMBOL, QuoteColumns.BID, QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE},
+        new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BID, QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE},
         QuoteColumns.ISCURRENT + " = ?",
         new String[]{"1"},
         null);
@@ -189,8 +189,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
-
-
   }
 
   @Override
