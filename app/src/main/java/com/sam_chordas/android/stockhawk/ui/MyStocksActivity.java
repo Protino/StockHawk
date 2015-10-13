@@ -1,6 +1,7 @@
 package com.sam_chordas.android.stockhawk.ui;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +34,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
    */
-  private NavigationDrawerFragment mNavigationDrawerFragment;
 
   /**
    * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -43,7 +44,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private ItemTouchHelper mItemTouchHelper;
   private static final int CURSOR_LOADER_ID = 0;
   private QuoteCursorAdapter mCursorAdapter;
-  //private ResponseReceiver receiver;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +110,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     GcmNetworkManager.getInstance(this).schedule(periodicTask);
   }
+
 
   @Override
   public void onResume() {

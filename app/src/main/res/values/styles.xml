@@ -9,13 +9,16 @@
   </style>
 
   <style name="PercentChangeTextStyle">
-    <item name="android:textSize">10sp</item>
+    <item name="android:textSize">20sp</item>
     <item name="android:textColor">#FFF</item>
     <item name="android:background">@drawable/percent_change_pill</item>
     <item name="android:textStyle">bold</item>
   </style>
+  <style name="BidPriceTextStyle">
+    <item name="android:textSize">20sp</item>
+  </style>
   <style name="StockSymbolTextStyle">
-    <item name="android:textStyle">bold</item>
+    <item name="android:textSize">25sp</item>
     <item name="android:textAllCaps">true</item>
   </style>
 
