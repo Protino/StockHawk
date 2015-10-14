@@ -9,13 +9,13 @@
         style="@style/StockSymbolTextStyle"
         android:layout_centerInParent="true"
         android:paddingLeft="10dp"
+        android:layout_gravity="left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
     <TextView
         android:id="@+id/bid_price"
         style="@style/BidPriceTextStyle"
-        android:gravity="right"
         android:paddingLeft="100dp"
         android:paddingRight="10dp"
         android:layout_width="wrap_content"
@@ -24,6 +24,7 @@
     <TextView
         android:id="@+id/change"
         android:paddingLeft="3dp"
+        android:layout_gravity="right"
         android:paddingRight="3dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
