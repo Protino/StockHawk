@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical">
-    <TextView
-        android:id="@+id/stock_symbol"
-        style="@style/StockSymbolTextStyle"
-        android:layout_centerInParent="true"
-        android:paddingLeft="10dp"
-        android:layout_gravity="left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    >
+  <TextView
+      android:id="@+id/stock_symbol"
+      style="@style/StockSymbolTextStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="left"
+      tools:text="GOOG"
+      />
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:gravity="right"
+      >
     <TextView
         android:id="@+id/bid_price"
         style="@style/BidPriceTextStyle"
-        android:paddingLeft="100dp"
-        android:paddingRight="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingRight="10sp"
+        tools:text="1000.00"
         />
     <TextView
         android:id="@+id/change"
-        android:paddingLeft="3dp"
-        android:layout_gravity="right"
-        android:paddingRight="3dp"
+        style="@style/PercentChangeTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/PercentChangeTextStyle"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        tools:text="100%"
         />
+  </LinearLayout>
 </LinearLayout>
