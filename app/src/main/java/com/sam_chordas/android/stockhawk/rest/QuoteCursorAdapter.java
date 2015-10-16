@@ -46,21 +46,11 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor){
     viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
     viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
-    viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
-    isPercent = true;
-    viewHolder.change.setOnClickListener(new View.OnClickListener(){
-      @Override public void onClick(View v) {
-        DatabaseUtils.dumpCursor(cursor);
-        cursor.moveToFirst();
-        if (isPercent) {
-          viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("value_change")));
-        }
-        else{
-          viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
-        }
-        isPercent = !isPercent;
-      }
-    });
+    if (Utils.showPercent){
+      viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
+    } else{
+      viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("change")));
+    }
   }
 
   @Override public boolean onItemMove(int fromPosition, int toPosition) {
