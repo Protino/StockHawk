@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.util.Log;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,11 +38,10 @@ public class Utils {
                 QuoteProvider.Quotes.CONTENT_URI);
             jsonObject = resultsArray.getJSONObject(i);
             String change = jsonObject.getString("Change");
-            Log.i(LOG_TAG, "change " + change);
             builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
-            builder.withValue(QuoteColumns.BIDPRICE, jsonObject.getString("Bid"));
-            builder.withValue(QuoteColumns.PERCENT_CHANGE, jsonObject.getString("ChangeinPercent"));
-            builder.withValue(QuoteColumns.CHANGE, change);
+            builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
+            builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(jsonObject.getString("ChangeinPercent"), true));
+            builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
             builder.withValue(QuoteColumns.CREATED, queryTime);
             builder.withValue(QuoteColumns.ISCURRENT, 1);
             if (change.charAt(0) == '-'){
@@ -57,5 +57,26 @@ public class Utils {
       Log.e(LOG_TAG, "String to JSON failed: " + e);
     }
     return batchOperations;
+  }
+
+  public static String truncateBidPrice(String bidPrice){
+    bidPrice = String.format("%.2f", Float.parseFloat(bidPrice));
+    return bidPrice;
+  }
+
+  public static String truncateChange(String change, boolean isPercentChange){
+    String weight = change.substring(0,1);
+    String ampersand = "";
+    if (isPercentChange){
+      ampersand = change.substring(change.length()-1, change.length());
+      change = change.substring(0, change.length()-1);
+    }
+    change = change.substring(1, change.length() - 1);
+    change = String.format("%.2f", Float.parseFloat(change));
+    StringBuffer changeBuffer = new StringBuffer(change);
+    changeBuffer.insert(0, weight);
+    changeBuffer.append(ampersand);
+    change = changeBuffer.toString();
+    return change;
   }
 }
