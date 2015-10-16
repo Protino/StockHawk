@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.util.Log;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import org.json.JSONArray;
@@ -68,11 +69,12 @@ public class Utils {
     String weight = change.substring(0,1);
     String ampersand = "";
     if (isPercentChange){
-      ampersand = change.substring(change.length()-1, change.length());
-      change = change.substring(0, change.length()-1);
+      ampersand = change.substring(change.length() - 1, change.length());
+      change = change.substring(0, change.length() - 1);
     }
-    change = change.substring(1, change.length() - 1);
-    change = String.format("%.2f", Float.parseFloat(change));
+    change = change.substring(1, change.length());
+    double round = (double) Math.round(Double.parseDouble(change) * 100) / 100;
+    change = String.format("%.2f", round);
     StringBuffer changeBuffer = new StringBuffer(change);
     changeBuffer.insert(0, weight);
     changeBuffer.append(ampersand);

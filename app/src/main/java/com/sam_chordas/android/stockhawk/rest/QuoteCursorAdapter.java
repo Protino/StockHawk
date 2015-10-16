@@ -2,6 +2,7 @@ package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
@@ -49,6 +50,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     isPercent = true;
     viewHolder.change.setOnClickListener(new View.OnClickListener(){
       @Override public void onClick(View v) {
+        DatabaseUtils.dumpCursor(cursor);
+        cursor.moveToFirst();
         if (isPercent) {
           viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("value_change")));
         }
