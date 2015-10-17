@@ -19,6 +19,7 @@ import android.view.View;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.databinding.ActivityMyStocksBinding;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
