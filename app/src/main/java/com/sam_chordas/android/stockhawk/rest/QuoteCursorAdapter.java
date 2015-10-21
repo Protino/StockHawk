@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.QuoteColumns;
+import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
 import com.sam_chordas.android.stockhawk.touch_helper.OnStartDragListener;
@@ -63,12 +65,12 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     }
   }
 
-  @Override public boolean onItemMove(int fromPosition, int toPosition) {
-    return false;
-  }
-
   @Override public void onItemDismiss(int position) {
-
+    long cursorId = getItemId(position);
+    Cursor c = getCursor();
+    String symbol = c.getString(c.getColumnIndex(QuoteColumns.SYMBOL));
+    mContext.getContentResolver().delete(QuoteProvider.Quotes.withSymbol(symbol), null, null);
+    notifyItemRemoved(position);
   }
 
   @Override public int getItemCount() {

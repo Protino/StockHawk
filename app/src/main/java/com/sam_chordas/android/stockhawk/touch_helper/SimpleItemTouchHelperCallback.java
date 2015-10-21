@@ -21,10 +21,10 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
     return true;
   }
 
-  @Override
-  public boolean isLongPressDragEnabled(){
-    return true;
-  }
+  //@Override
+  //public boolean isLongPressDragEnabled(){
+  //  return true;
+  //}
 
   @Override
   public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder){
@@ -35,10 +35,7 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
 
   @Override
   public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder sourceViewHolder, RecyclerView.ViewHolder targetViewHolder){
-    if (sourceViewHolder.getItemViewType() != targetViewHolder.getItemViewType()){
-      return false;
-    }
-    mAdapter.onItemMove(sourceViewHolder.getAdapterPosition(), targetViewHolder.getAdapterPosition());
+    //mAdapter.onItemMove(sourceViewHolder.getAdapterPosition(), targetViewHolder.getAdapterPosition());
     return true;
   }
 
@@ -47,24 +44,22 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
     mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
   }
 
-  @Override
-  public void onChildDraw(Canvas canvas, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isActive){
-    if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
-      final float alpha = ALPHA_FULL - Math.abs(dX) /(float) viewHolder.itemView.getWidth();
-      viewHolder.itemView.setAlpha(alpha);
-      viewHolder.itemView.setTranslationX(dX);
-    }else{
-      super.onChildDraw(canvas, recyclerView, viewHolder, dX, dY, actionState, isActive);
-    }
-  }
 
   @Override
   public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState){
     if (actionState != ItemTouchHelper.ACTION_STATE_IDLE){
-      if (viewHolder instanceof ItemTouchHelperViewHolder){
-        ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-        itemViewHolder.onItemClear();
-      }
+      ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
+      itemViewHolder.onItemSelected();
     }
+
+    super.onSelectedChanged(viewHolder, actionState);
+  }
+
+  @Override
+  public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+    super.clearView(recyclerView, viewHolder);
+
+    ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
+    itemViewHolder.onItemClear();
   }
 }

@@ -37,13 +37,13 @@ public class QuoteProvider {
 
     @InexactContentUri(
         name = "QUOTE_ID",
-        path = Path.QUOTES + "/#",
+        path = Path.QUOTES + "/*",
         type = "vnd.android.cursor.item/quote",
-        whereColumn = QuoteColumns._ID,
+        whereColumn = QuoteColumns.SYMBOL,
         pathSegment = 1
     )
-    public static Uri withId(long id){
-      return buildUri(Path.QUOTES, String.valueOf(id));
+    public static Uri withSymbol(String symbol){
+      return buildUri(Path.QUOTES, symbol);
     }
   }
 }

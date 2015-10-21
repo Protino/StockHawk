@@ -6,7 +6,7 @@ package com.sam_chordas.android.stockhawk.touch_helper;
  */
 public interface ItemTouchHelperAdapter {
 
-  boolean onItemMove(int fromPosition, int toPosition);
+  //boolean onItemMove(int fromPosition, int toPosition);
 
   void onItemDismiss(int position);
 }
