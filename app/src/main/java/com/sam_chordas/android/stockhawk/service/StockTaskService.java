@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.RemoteException;
 import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -18,6 +19,7 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,6 +31,7 @@ public class StockTaskService extends GcmTaskService{
 
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
+  private StringBuilder mStoredSymbols = new StringBuilder();
 
   public StockTaskService(){}
 
@@ -50,29 +53,44 @@ public class StockTaskService extends GcmTaskService{
     if (mContext == null){
       mContext = this;
     }
-    String symbols = null;
-    if (params.getTag().equals("init") || params.getTag().equals("periodic")){
-      Log.i(LOG_TAG, "query");
-     initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI, new String []{QuoteColumns.SYMBOL},
-          QuoteColumns.ISCURRENT +" = ?", new String[]{"1"}, null);
-      if (initQueryCursor != null){
-        symbols = initQueryCursor.toString();
-        Log.i(LOG_TAG, "cursor: " + symbols);
-      }
-    }
     StringBuilder urlStringBuilder = new StringBuilder();
-    String urlString;
-    String getResponse;
-    int result = GcmNetworkManager.RESULT_FAILURE;
-    try {
-      urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
-      urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
-          + "in (\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
-      urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
-          + "org%2Falltableswithkeys&callback=");
+    String symbols = null;
+    try{
+    urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
+    urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
+        + "in (", "UTF-8"));
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
+    if (params.getTag().equals("init") || params.getTag().equals("periodic")){
+     initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+         new String[] { QuoteColumns.SYMBOL }, QuoteColumns.ISCURRENT + " = ?",
+         new String[] { "1" }, null);
+      if (initQueryCursor != null){
+        DatabaseUtils.dumpCursor(initQueryCursor);
+        symbols = initQueryCursor.toString();
+        initQueryCursor.moveToFirst();
+        for (int i = 0; i < initQueryCursor.getCount(); i++){
+          mStoredSymbols.append("\""+
+              initQueryCursor.getString(initQueryCursor.getColumnIndex("symbol"))+"\",");
+          initQueryCursor.moveToNext();
+        }
+        mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
+        try {
+          urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+        }
+        urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
+            + "org%2Falltableswithkeys&callback=");
+      }
+    } else if (params.getTag().equals("add")){
+      // get symbol from params.getExtra and build query
+    }
+
+    String urlString;
+    String getResponse;
+    int result = GcmNetworkManager.RESULT_FAILURE;
 
     if (urlStringBuilder != null){
       urlString = urlStringBuilder.toString();

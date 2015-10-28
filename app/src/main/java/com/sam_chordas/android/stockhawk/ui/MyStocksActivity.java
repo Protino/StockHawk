@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
@@ -45,37 +47,48 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private ItemTouchHelper mItemTouchHelper;
   private static final int CURSOR_LOADER_ID = 0;
   private QuoteCursorAdapter mCursorAdapter;
+  private Context mContext;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_my_stocks);
+    mServiceIntent = new Intent(this, StockIntentService.class);
     if (savedInstanceState == null){
-      Stetho.initialize(
-          Stetho.newInitializerBuilder(this)
-              .enableDumpapp(
-                  Stetho.defaultDumperPluginsProvider(this))
-              .enableWebKitInspector(
-                  Stetho.defaultInspectorModulesProvider(this))
+      Stetho.initialize(Stetho.newInitializerBuilder(this)
+              .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+              .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
               .build());
-    }
 
+      mServiceIntent.putExtra("tag", "init");
+      startService(mServiceIntent);
+    }
+    mContext = this;
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-    recyclerView.setLayoutManager(
-        new LinearLayoutManager(this));
+    recyclerView.setLayoutManager(new LinearLayoutManager(this));
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
     mCursorAdapter = new QuoteCursorAdapter(this, null);
     recyclerView.setAdapter(mCursorAdapter);
 
-    mServiceIntent = new Intent(this, StockIntentService.class);
 
     FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.attachToRecyclerView(recyclerView);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
+        new MaterialDialog.Builder(mContext)
+            .title(R.string.symbol_search)
+            .content(R.string.content_test)
+            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
+            .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
+              @Override
+              public void onInput(MaterialDialog dialog, CharSequence input) {
+                // Do something
+              }
+            }).show();
         mServiceIntent.putExtra("tag", "add");
-        startService(mServiceIntent);
+        mServiceIntent.putExtra("symbol", "entered Symbol");
+        //startService(mServiceIntent);
       }
     });
 
@@ -85,8 +98,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     mTitle = getTitle();
 
-    mServiceIntent.putExtra("tag", "init");
-    startService(mServiceIntent);
+
 
     //IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
     //filter.addCategory(Intent.CATEGORY_DEFAULT);
