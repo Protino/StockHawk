@@ -63,10 +63,17 @@ public class StockTaskService extends GcmTaskService{
       e.printStackTrace();
     }
     if (params.getTag().equals("init") || params.getTag().equals("periodic")){
-     initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-         new String[] { QuoteColumns.SYMBOL }, QuoteColumns.ISCURRENT + " = ?",
-         new String[] { "1" }, null);
-      if (initQueryCursor != null){
+      initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+          new String[] { QuoteColumns.SYMBOL }, QuoteColumns.ISCURRENT + " = ?",
+          new String[] { "1" }, null);
+      if (initQueryCursor.getCount() == 0 || initQueryCursor == null){
+        try {
+          urlStringBuilder.append(
+              URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+        }
+      } else if (initQueryCursor != null){
         DatabaseUtils.dumpCursor(initQueryCursor);
         symbols = initQueryCursor.toString();
         initQueryCursor.moveToFirst();
@@ -76,17 +83,19 @@ public class StockTaskService extends GcmTaskService{
           initQueryCursor.moveToNext();
         }
         mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
+        Log.i(LOG_TAG, "last char: " + mStoredSymbols.charAt(mStoredSymbols.length() - 1));
         try {
           urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
           e.printStackTrace();
         }
-        urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
-            + "org%2Falltableswithkeys&callback=");
       }
     } else if (params.getTag().equals("add")){
       // get symbol from params.getExtra and build query
     }
+
+    urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
+        + "org%2Falltableswithkeys&callback=");
 
     String urlString;
     String getResponse;
