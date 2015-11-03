@@ -31,33 +31,17 @@ public class Utils {
       if (jsonObject != null && jsonObject.length() != 0){
         jsonObject = jsonObject.getJSONObject("query");
         int count = Integer.parseInt(jsonObject.getString("count"));
-        Log.i(LOG_TAG, "Count: " + count);
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
               .getJSONObject("quote");
           batchOperations.add(buildBatchOperation(jsonObject));
         } else{
           resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
-          String queryTime = jsonObject.getString("created");
+
           if (resultsArray != null && resultsArray.length() != 0){
             for (int i = 0; i < resultsArray.length(); i++){
-              //ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-              //    QuoteProvider.Quotes.CONTENT_URI);
               jsonObject = resultsArray.getJSONObject(i);
               batchOperations.add(buildBatchOperation(jsonObject));
-              //String change = jsonObject.getString("Change");
-              //builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
-              //builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
-              //builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(jsonObject.getString("ChangeinPercent"), true));
-              //builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
-              //builder.withValue(QuoteColumns.CREATED, queryTime);
-              //builder.withValue(QuoteColumns.ISCURRENT, 1);
-              //if (change.charAt(0) == '-'){
-              //  builder.withValue(QuoteColumns.ISUP, 0);
-              //}else{
-              //  builder.withValue(QuoteColumns.ISUP, 1);
-              //}
-              //batchOperations.add(builder.build());
             }
           }
         }
@@ -101,14 +85,13 @@ public class Utils {
       builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
           jsonObject.getString("ChangeinPercent"), true));
       builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
-      //builder.withValue(QuoteColumns.CREATED, queryTime);
       builder.withValue(QuoteColumns.ISCURRENT, 1);
       if (change.charAt(0) == '-'){
         builder.withValue(QuoteColumns.ISUP, 0);
       }else{
         builder.withValue(QuoteColumns.ISUP, 1);
       }
-      //batchOperations.add(builder.build());
+
     } catch (JSONException e){
       e.printStackTrace();
     }

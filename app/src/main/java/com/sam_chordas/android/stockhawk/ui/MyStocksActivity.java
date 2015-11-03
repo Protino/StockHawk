@@ -97,14 +97,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     mTitle = getTitle();
 
-
-
-    //IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
-    //filter.addCategory(Intent.CATEGORY_DEFAULT);
-    //receiver = new ResponseReceiver();
-    //registerReceiver(receiver, filter);
-
-
     long period = 3600L;
     long flex = 10L;
     String periodicTag = "periodic";
@@ -129,31 +121,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
   }
 
-
-
-  //@Override
-  //public void onNavigationDrawerItemSelected(int position) {
-  //  // update the main content by replacing fragments
-  //  FragmentManager fragmentManager = getSupportFragmentManager();
-  //  fragmentManager.beginTransaction()
-  //      .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-  //      .commit();
-  //}
-
-  //public void onSectionAttached(int number) {
-  //  switch (number) {
-  //    case 1:
-  //      mTitle = getString(R.string.title_section1);
-  //      break;
-  //    case 2:
-  //      mTitle = getString(R.string.title_section2);
-  //      break;
-  //    case 3:
-  //      mTitle = getString(R.string.title_section3);
-  //      break;
-  //  }
- // }
-
   public void restoreActionBar() {
     ActionBar actionBar = getSupportActionBar();
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -163,15 +130,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    //if (!mNavigationDrawerFragment.isDrawerOpen()) {
-       //Only show items in the action bar relevant to this screen
-      // if the drawer is not showing. Otherwise, let the drawer
-      // decide what to show in the action bar.
       getMenuInflater().inflate(R.menu.my_stocks, menu);
       restoreActionBar();
       return true;
-    //}
-    //return super.onCreateOptionsMenu(menu);
   }
 
   @Override
@@ -214,43 +175,4 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mCursorAdapter.swapCursor(null);
   }
 
-  /**
-   * A placeholder fragment containing a simple view.
-   */
-  //public static class PlaceholderFragment extends Fragment {
-  //  /**
-  //   * The fragment argument representing the section number for this
-  //   * fragment.
-  //   */
-  //  private static final String ARG_SECTION_NUMBER = "section_number";
-  //
-  //  /**
-  //   * Returns a new instance of this fragment for the given section
-  //   * number.
-  //   */
-  //  public static PlaceholderFragment newInstance(int sectionNumber) {
-  //    PlaceholderFragment fragment = new PlaceholderFragment();
-  //    Bundle args = new Bundle();
-  //    args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-  //    fragment.setArguments(args);
-  //    return fragment;
-  //  }
-  //
-  //  public PlaceholderFragment() {
-  //  }
-  //
-  //  @Override
-  //  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-  //      Bundle savedInstanceState) {
-  //    View rootView = inflater.inflate(R.layout.fragment_my_stocks, container, false);
-  //    return rootView;
-  //  }
-  //
-  //  @Override
-  //  public void onAttach(Activity activity) {
-  //    super.onAttach(activity);
-  //    ((MyStocksActivity) activity).onSectionAttached(
-  //        getArguments().getInt(ARG_SECTION_NUMBER));
-  //  }
-  //}
 }

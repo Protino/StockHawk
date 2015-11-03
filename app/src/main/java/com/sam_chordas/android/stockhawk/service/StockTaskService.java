@@ -85,7 +85,6 @@ public class StockTaskService extends GcmTaskService{
           initQueryCursor.moveToNext();
         }
         mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
-        Log.i(LOG_TAG, "last char: " + mStoredSymbols.charAt(mStoredSymbols.length() - 1));
         try {
           urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -96,7 +95,6 @@ public class StockTaskService extends GcmTaskService{
       isUpdate = false;
       // get symbol from params.getExtra and build query
       String stockInput = params.getExtras().getString("symbol");
-      Log.i(LOG_TAG, "stock input: " + stockInput);
       try {
         urlStringBuilder.append(URLEncoder.encode("\""+stockInput+"\")", "UTF-8"));
       } catch (UnsupportedEncodingException e){
@@ -115,7 +113,6 @@ public class StockTaskService extends GcmTaskService{
       urlString = urlStringBuilder.toString();
       try{
         getResponse = fetchData(urlString);
-        Log.i(StockTaskService.class.getSimpleName(), "STOCK JSON: " + getResponse);
         result = GcmNetworkManager.RESULT_SUCCESS;
         try {
           ContentValues contentValues = new ContentValues();
