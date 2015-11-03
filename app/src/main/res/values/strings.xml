@@ -12,8 +12,8 @@
 
   <string name="action_settings">Settings</string>
   <string name="action_change_units">Change Units</string>
-  <string name="symbol_search">Search</string>
-  <string name="content_test">content test</string>
-  <string name="input_hint">input hint</string>
-  <string name="input_prefill">input prefill</string>
+  <string name="symbol_search">Symbol Search</string>
+  <string name="content_test">Search for a Stock Symbol</string>
+  <string name="input_hint">FB</string>
+  <string name="input_prefill"></string>
 </resources>

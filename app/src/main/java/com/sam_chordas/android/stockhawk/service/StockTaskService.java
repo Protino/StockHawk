@@ -32,6 +32,7 @@ public class StockTaskService extends GcmTaskService{
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
   private StringBuilder mStoredSymbols = new StringBuilder();
+  private boolean isUpdate;
 
   public StockTaskService(){}
 
@@ -63,6 +64,7 @@ public class StockTaskService extends GcmTaskService{
       e.printStackTrace();
     }
     if (params.getTag().equals("init") || params.getTag().equals("periodic")){
+      isUpdate = true;
       initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
           new String[] { QuoteColumns.SYMBOL }, QuoteColumns.ISCURRENT + " = ?",
           new String[] { "1" }, null);
@@ -91,7 +93,15 @@ public class StockTaskService extends GcmTaskService{
         }
       }
     } else if (params.getTag().equals("add")){
+      isUpdate = false;
       // get symbol from params.getExtra and build query
+      String stockInput = params.getExtras().getString("symbol");
+      Log.i(LOG_TAG, "stock input: " + stockInput);
+      try {
+        urlStringBuilder.append(URLEncoder.encode("\""+stockInput+"\")", "UTF-8"));
+      } catch (UnsupportedEncodingException e){
+        e.printStackTrace();
+      }
     }
 
     urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
@@ -107,18 +117,19 @@ public class StockTaskService extends GcmTaskService{
         getResponse = fetchData(urlString);
         Log.i(StockTaskService.class.getSimpleName(), "STOCK JSON: " + getResponse);
         result = GcmNetworkManager.RESULT_SUCCESS;
-
         try {
           ContentValues contentValues = new ContentValues();
           // update ISCURRENT to 0 (false) so new data is current
-          contentValues.put(QuoteColumns.ISCURRENT, 0);
-          mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues, null, null);
+          if (isUpdate){
+            contentValues.put(QuoteColumns.ISCURRENT, 0);
+            mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
+                null, null);
+          }
           mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
               Utils.quoteJsonToContentVals(getResponse));
         }catch (RemoteException | OperationApplicationException e){
           Log.e(LOG_TAG, "Error applying batch insert", e);
         }
-
       } catch (IOException e){
         e.printStackTrace();
       }
