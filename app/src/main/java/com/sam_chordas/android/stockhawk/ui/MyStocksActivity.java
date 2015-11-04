@@ -13,10 +13,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
@@ -83,9 +84,20 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
               @Override
               public void onInput(MaterialDialog dialog, CharSequence input) {
-                mServiceIntent.putExtra("tag", "add");
-                mServiceIntent.putExtra("symbol", input.toString());
-                startService(mServiceIntent);
+                Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+                    new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
+                    new String[] { input.toString()}, null);
+                if (c.getCount() != 0){
+                  Toast toast = Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                      Toast.LENGTH_LONG);
+                  toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                  toast.show();
+                  return;
+                } else{
+                  mServiceIntent.putExtra("tag", "add");
+                  mServiceIntent.putExtra("symbol", input.toString());
+                  startService(mServiceIntent);
+                }
               }
             }).show();
       }
