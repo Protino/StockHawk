@@ -1,6 +1,5 @@
 package com.sam_chordas.android.stockhawk.touch_helper;
 
-import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 

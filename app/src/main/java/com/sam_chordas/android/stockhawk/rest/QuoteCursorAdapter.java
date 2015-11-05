@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,6 @@ import com.sam_chordas.android.stockhawk.touch_helper.OnStartDragListener;
  *    https://gist.github.com/skyfishjy/443b7448f59be978bc59
  * for the code structure
  */
-@TargetApi(16)
 public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAdapter.ViewHolder>
     implements ItemTouchHelperAdapter{
   private Context mContext;
@@ -51,12 +51,23 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor){
     viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
     viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
+    int sdk = Build.VERSION.SDK_INT;
     if (cursor.getInt(cursor.getColumnIndex("is_up")) == 1){
-      viewHolder.change.setBackground(mContext.getResources()
-          .getDrawable(R.drawable.percent_change_pill_green));
+      if (sdk < Build.VERSION_CODES.JELLY_BEAN){
+        viewHolder.change.setBackgroundDrawable(
+            mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+      }else {
+        viewHolder.change.setBackground(
+            mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+      }
     } else{
-      viewHolder.change.setBackground(mContext.getResources()
-          .getDrawable(R.drawable.percent_change_pill_red));
+      if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
+        viewHolder.change.setBackgroundDrawable(
+            mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+      } else{
+        viewHolder.change.setBackground(
+            mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+      }
     }
     if (Utils.showPercent){
       viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
@@ -66,7 +77,6 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   }
 
   @Override public void onItemDismiss(int position) {
-    long cursorId = getItemId(position);
     Cursor c = getCursor();
     String symbol = c.getString(c.getColumnIndex(QuoteColumns.SYMBOL));
     mContext.getContentResolver().delete(QuoteProvider.Quotes.withSymbol(symbol), null, null);
