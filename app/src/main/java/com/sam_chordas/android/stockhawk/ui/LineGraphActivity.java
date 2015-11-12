@@ -72,6 +72,7 @@ public class LineGraphActivity extends AppCompatActivity implements
       mCursor.moveToNext();
     }
     lineChartView.addData(mLineSet);
+    lineChartView.show();
   }
 
   private void initLineChart() {
