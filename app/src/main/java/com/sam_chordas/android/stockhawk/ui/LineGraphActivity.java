@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.db.chart.Tools;
 import com.db.chart.model.LineSet;
+import com.db.chart.view.AxisController;
 import com.db.chart.view.ChartView;
 import com.db.chart.view.LineChartView;
 import com.sam_chordas.android.stockhawk.R;
@@ -29,7 +30,6 @@ public class LineGraphActivity extends AppCompatActivity implements
   private static final int CURSOR_LOADER_ID = 0;
   private Cursor mCursor;
   private LineChartView lineChartView;
-  private ArrayList<Float> bidPrices;
   private LineSet mLineSet;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +63,15 @@ public class LineGraphActivity extends AppCompatActivity implements
 
   private void fillLineSet(){
     mCursor.moveToFirst();
-    mLineSet.setColor(Color.parseColor("#a34545"))
-        .setFill(Color.parseColor("#a34545"))
-        .setSmooth(true);
+    mLineSet.setColor(Color.parseColor("#FF58C674"))
+        .setDotsStrokeThickness(Tools.fromDpToPx(2))
+        .setDotsStrokeColor(Color.parseColor("#FF58C674"))
+        .setDotsColor(Color.parseColor("#eef1f6"));
+    mLineSet.setDotsColor(Color.parseColor("#ffffff"));
+    mLineSet.setDotsRadius(Tools.fromDpToPx(3));
     for (int i = 0; i < mCursor.getCount(); i++){
       float price = Float.parseFloat(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
-      mLineSet.addPoint("test", price);
+      mLineSet.addPoint("test " + i, price);
       mCursor.moveToNext();
     }
     lineChartView.addData(mLineSet);
@@ -77,13 +80,18 @@ public class LineGraphActivity extends AppCompatActivity implements
 
   private void initLineChart() {
     Paint gridPaint = new Paint();
-    gridPaint.setColor(Color.parseColor("#7F97B867"));
+    gridPaint.setColor(Color.parseColor("#308E9196"));
     gridPaint.setStyle(Paint.Style.STROKE);
     gridPaint.setAntiAlias(true);
-    gridPaint.setStrokeWidth(Tools.fromDpToPx(.75f));
-    lineChartView.setXAxis(true);
-    lineChartView.setYAxis(true);
-    lineChartView.setStep(2);
-    lineChartView.setGrid(ChartView.GridType.HORIZONTAL, gridPaint);
+    gridPaint.setStrokeWidth(Tools.fromDpToPx(1f));
+    lineChartView.setBorderSpacing(1)
+        .setAxisBorderValues(0, 1000, 100)
+        .setXLabels(AxisController.LabelPosition.OUTSIDE)
+        .setYLabels(AxisController.LabelPosition.OUTSIDE)
+        .setLabelsColor(Color.parseColor("#FF8E9196"))
+        .setXAxis(false)
+        .setYAxis(false)
+        .setBorderSpacing(Tools.fromDpToPx(5))
+        .setGrid(ChartView.GridType.HORIZONTAL, gridPaint);
   }
 }
