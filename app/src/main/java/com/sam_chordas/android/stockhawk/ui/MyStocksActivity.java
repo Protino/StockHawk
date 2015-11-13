@@ -23,6 +23,7 @@ import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
+import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
@@ -31,7 +32,6 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
-import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -49,6 +49,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private static final int CURSOR_LOADER_ID = 0;
   private QuoteCursorAdapter mCursorAdapter;
   private Context mContext;
+  private Cursor mCursor;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,16 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
     mCursorAdapter = new QuoteCursorAdapter(this, null);
+    recyclerView.addOnItemTouchListener(
+        new RecyclerViewItemClickListener(this, new RecyclerViewItemClickListener.OnItemClickListener() {
+          @Override public void onItemClick(View v, int position) {
+            Intent graphIntent = new Intent(mContext, LineGraphActivity.class);
+            mCursor.moveToPosition(position);
+            graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
+            mContext.startActivity(graphIntent);
+          }
+        })
+    );
     recyclerView.setAdapter(mCursorAdapter);
 
 
@@ -103,9 +114,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
       }
     });
 
-    ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
-    mItemTouchHelper = new ItemTouchHelper(callback);
-    mItemTouchHelper.attachToRecyclerView(recyclerView);
+    //ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
+    //mItemTouchHelper = new ItemTouchHelper(callback);
+    //mItemTouchHelper.attachToRecyclerView(recyclerView);
 
     mTitle = getTitle();
 
@@ -180,6 +191,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
+    mCursor = data;
   }
 
   @Override
