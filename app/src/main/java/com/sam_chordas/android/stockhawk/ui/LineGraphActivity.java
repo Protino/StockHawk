@@ -63,17 +63,15 @@ public class LineGraphActivity extends AppCompatActivity implements
 
   private void fillLineSet(){
     mCursor.moveToFirst();
-    mLineSet.setColor(Color.parseColor("#FF58C674"))
-        .setDotsStrokeThickness(Tools.fromDpToPx(2))
-        .setDotsStrokeColor(Color.parseColor("#FF58C674"))
-        .setDotsColor(Color.parseColor("#eef1f6"));
-    mLineSet.setDotsColor(Color.parseColor("#ffffff"));
-    mLineSet.setDotsRadius(Tools.fromDpToPx(3));
     for (int i = 0; i < mCursor.getCount(); i++){
       float price = Float.parseFloat(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
       mLineSet.addPoint("test " + i, price);
       mCursor.moveToNext();
     }
+    mLineSet.setColor(Color.parseColor("#e50000"))
+        .setDotsStrokeThickness(Tools.fromDpToPx(2))
+        .setDotsStrokeColor(Color.parseColor("#e50000"))
+        .setDotsColor(Color.parseColor("#eef1f6"));
     lineChartView.addData(mLineSet);
     lineChartView.show();
   }
@@ -85,7 +83,7 @@ public class LineGraphActivity extends AppCompatActivity implements
     gridPaint.setAntiAlias(true);
     gridPaint.setStrokeWidth(Tools.fromDpToPx(1f));
     lineChartView.setBorderSpacing(1)
-        .setAxisBorderValues(0, 1000, 100)
+        .setAxisBorderValues(0, 1000, 50)
         .setXLabels(AxisController.LabelPosition.OUTSIDE)
         .setYLabels(AxisController.LabelPosition.OUTSIDE)
         .setLabelsColor(Color.parseColor("#FF8E9196"))
