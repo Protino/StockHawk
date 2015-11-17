@@ -57,6 +57,11 @@
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info"/>
         </receiver>
+
+        <service
+            android:name=".widget.QuoteWidgetRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 
 </manifest>
