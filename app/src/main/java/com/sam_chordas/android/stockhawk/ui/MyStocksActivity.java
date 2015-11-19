@@ -32,6 +32,7 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
+import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -55,13 +56,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_my_stocks);
+    // The intent service is for executing immediate pulls from the Yahoo API
+    // GCMTaskService can only schedule tasks, they cannot execute immediately
     mServiceIntent = new Intent(this, StockIntentService.class);
     if (savedInstanceState == null){
       Stetho.initialize(Stetho.newInitializerBuilder(this)
               .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
               .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
               .build());
-
+      // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
       startService(mServiceIntent);
     }
@@ -71,16 +74,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
     mCursorAdapter = new QuoteCursorAdapter(this, null);
-    recyclerView.addOnItemTouchListener(
-        new RecyclerViewItemClickListener(this, new RecyclerViewItemClickListener.OnItemClickListener() {
-          @Override public void onItemClick(View v, int position) {
-            Intent graphIntent = new Intent(mContext, LineGraphActivity.class);
-            mCursor.moveToPosition(position);
-            graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
-            mContext.startActivity(graphIntent);
-          }
-        })
-    );
+    recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
+            new RecyclerViewItemClickListener.OnItemClickListener() {
+              @Override public void onItemClick(View v, int position) {
+                Intent graphIntent = new Intent(mContext, LineGraphActivity.class);
+                mCursor.moveToPosition(position);
+                graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
+                mContext.startActivity(graphIntent);
+              }
+            }));
     recyclerView.setAdapter(mCursorAdapter);
 
 
@@ -88,35 +90,38 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     fab.attachToRecyclerView(recyclerView);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        new MaterialDialog.Builder(mContext)
-            .title(R.string.symbol_search)
+        new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
             .content(R.string.content_test)
             .inputType(InputType.TYPE_CLASS_TEXT)
             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
-              @Override
-              public void onInput(MaterialDialog dialog, CharSequence input) {
+              @Override public void onInput(MaterialDialog dialog, CharSequence input) {
+                // On FAB click, receive user input. Make sure the stock doesn't already exist
+                // in the DB and proceed accordingly
                 Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
                     new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
-                    new String[] { input.toString()}, null);
-                if (c.getCount() != 0){
-                  Toast toast = Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
-                      Toast.LENGTH_LONG);
+                    new String[] { input.toString() }, null);
+                if (c.getCount() != 0) {
+                  Toast toast =
+                      Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                          Toast.LENGTH_LONG);
                   toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                   toast.show();
                   return;
-                } else{
+                } else {
+                  // Add the stock to DB
                   mServiceIntent.putExtra("tag", "add");
                   mServiceIntent.putExtra("symbol", input.toString());
                   startService(mServiceIntent);
                 }
               }
-            }).show();
+            })
+            .show();
       }
     });
 
-    //ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
-    //mItemTouchHelper = new ItemTouchHelper(callback);
-    //mItemTouchHelper.attachToRecyclerView(recyclerView);
+    ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
+    mItemTouchHelper = new ItemTouchHelper(callback);
+    mItemTouchHelper.attachToRecyclerView(recyclerView);
 
     mTitle = getTitle();
 
@@ -124,7 +129,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     long flex = 10L;
     String periodicTag = "periodic";
 
-
+    // create a periodic task to pull stocks once every hour after the app has been opened. This
+    // is so Widget data stays up to date.
     PeriodicTask periodicTask = new PeriodicTask.Builder()
         .setService(StockTaskService.class)
         .setPeriod(period)
@@ -133,7 +139,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
         .setRequiresCharging(false)
         .build();
-
+    // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
+    // are updated.
     GcmNetworkManager.getInstance(this).schedule(periodicTask);
   }
 
@@ -171,6 +178,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
 
     if (id == R.id.action_change_units){
+      // this is for changing stock changes from percent value to dollar value
       Utils.showPercent = !Utils.showPercent;
       this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
     }
@@ -180,6 +188,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    // This narrows the return to only the stocks that are most current.
     return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
         new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
             QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},

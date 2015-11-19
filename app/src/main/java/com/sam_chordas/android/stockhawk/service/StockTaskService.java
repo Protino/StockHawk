@@ -19,12 +19,11 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by sam_chordas on 9/30/15.
+ * The GCMTask service is primarily for periodic tasks. However, OnRunTask can be called directly
+ * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService{
   private String LOG_TAG = StockTaskService.class.getSimpleName();
@@ -55,10 +54,10 @@ public class StockTaskService extends GcmTaskService{
       mContext = this;
     }
     StringBuilder urlStringBuilder = new StringBuilder();
-    String symbols = null;
     try{
-    urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
-    urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
+      // Base URL for the Yahoo query
+      urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
+      urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
         + "in (", "UTF-8"));
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
@@ -69,6 +68,7 @@ public class StockTaskService extends GcmTaskService{
           new String[] { QuoteColumns.SYMBOL }, QuoteColumns.ISCURRENT + " = ?",
           new String[] { "1" }, null);
       if (initQueryCursor.getCount() == 0 || initQueryCursor == null){
+        // Init task. Populates DB with quotes for the symbols seen below
         try {
           urlStringBuilder.append(
               URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
@@ -77,7 +77,6 @@ public class StockTaskService extends GcmTaskService{
         }
       } else if (initQueryCursor != null){
         DatabaseUtils.dumpCursor(initQueryCursor);
-        symbols = initQueryCursor.toString();
         initQueryCursor.moveToFirst();
         for (int i = 0; i < initQueryCursor.getCount(); i++){
           mStoredSymbols.append("\""+
@@ -101,7 +100,7 @@ public class StockTaskService extends GcmTaskService{
         e.printStackTrace();
       }
     }
-
+    // finalize the URL for the API query.
     urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
         + "org%2Falltableswithkeys&callback=");
 
