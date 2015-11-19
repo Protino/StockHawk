@@ -3,8 +3,6 @@ package com.sam_chordas.android.stockhawk.widget;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
-import android.os.Build;
-import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -15,9 +13,10 @@ import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 
 /**
- * Created by Daniel on 11/16/15.
+ * The adapter that creates RemoteViews for each collection item in the widget
  */
 public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
+
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new RemoteViewsFactory() {
@@ -33,7 +32,13 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
                     data.close();
                 }
 
+                // This method is called by the app hosting the widget (e.g., the launcher)
+                // However, our ContentProvider is not exported so it doesn't have access to the
+                // data. Therefore we need to clear (and finally restore) the calling identity so
+                // that calls use our process and permission
                 final long identityToken = Binder.clearCallingIdentity();
+
+                // This is the same query from MyStocksActivity
                 data = getContentResolver().query(
                         QuoteProvider.Quotes.CONTENT_URI,
                         new String[] {
@@ -57,9 +62,7 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public int getCount() {
-                int count =  data == null ? 0 : data.getCount();
-                Log.d("QuoteWidget", "" + count);
-                return count;
+                return data == null ? 0 : data.getCount();
             }
 
             @Override
@@ -68,12 +71,15 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
                         data == null || !data.moveToPosition(position)) {
                     return null;
                 }
+
+                // Get the layout
                 RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_collection_item);
+
+                // Bind data to the views
                 views.setTextViewText(R.id.stock_symbol, data.getString(data.getColumnIndex
                         ("symbol")));
 
-                int sdk = Build.VERSION.SDK_INT;
-                if (data.getInt(data.getColumnIndex("is_up")) == 1){
+                if (data.getInt(data.getColumnIndex("is_up")) == 1) {
                         views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
                 } else {
                     views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
@@ -94,7 +100,7 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public RemoteViews getLoadingView() {
-                return new RemoteViews(getPackageName(), R.layout.widget_collection_item);
+                return null; // use the default loading view
             }
 
             @Override
@@ -104,6 +110,7 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public long getItemId(int position) {
+                // Get the row ID for the view at the specified position
                 if (data != null && data.moveToPosition(position)) {
                     final int QUOTES_ID_COL = 0;
                     return data.getLong(QUOTES_ID_COL);

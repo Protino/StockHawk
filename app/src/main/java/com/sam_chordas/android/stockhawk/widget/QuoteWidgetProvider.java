@@ -61,6 +61,7 @@ public class QuoteWidgetProvider extends AppWidgetProvider{
 
   /**
    * Sets the remote adapter used to fill in the list items
+   *
    * @param context the context to launch the intent
    * @param views RemoteViews to set the RemoteAdapter
    */
