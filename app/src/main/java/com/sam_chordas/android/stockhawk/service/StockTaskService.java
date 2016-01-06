@@ -65,8 +65,8 @@ public class StockTaskService extends GcmTaskService{
     if (params.getTag().equals("init") || params.getTag().equals("periodic")){
       isUpdate = true;
       initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-          new String[] { QuoteColumns.SYMBOL }, QuoteColumns.ISCURRENT + " = ?",
-          new String[] { "1" }, null);
+          new String[] { "Distinct " + QuoteColumns.SYMBOL }, null,
+          null, null);
       if (initQueryCursor.getCount() == 0 || initQueryCursor == null){
         // Init task. Populates DB with quotes for the symbols seen below
         try {
