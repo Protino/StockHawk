@@ -27,7 +27,6 @@ import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
-import com.facebook.stetho.Stetho;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
@@ -44,7 +43,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
    * Used to store the last screen title. For use in {@link #restoreActionBar()}.
    */
   private CharSequence mTitle;
-  private int taskId = 0;
   private Intent mServiceIntent;
   private ItemTouchHelper mItemTouchHelper;
   private static final int CURSOR_LOADER_ID = 0;
@@ -60,10 +58,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     // GCMTaskService can only schedule tasks, they cannot execute immediately
     mServiceIntent = new Intent(this, StockIntentService.class);
     if (savedInstanceState == null){
-      Stetho.initialize(Stetho.newInitializerBuilder(this)
-              .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-              .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-              .build());
       // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
       startService(mServiceIntent);
@@ -77,10 +71,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
-                Intent graphIntent = new Intent(mContext, LineGraphActivity.class);
-                mCursor.moveToPosition(position);
-                graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
-                mContext.startActivity(graphIntent);
+
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);
