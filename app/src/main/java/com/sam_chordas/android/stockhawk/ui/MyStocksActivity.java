@@ -6,6 +6,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -49,10 +51,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private QuoteCursorAdapter mCursorAdapter;
   private Context mContext;
   private Cursor mCursor;
+  boolean isConnected;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mContext = this;
+    ConnectivityManager cm =
+        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+    isConnected = activeNetwork != null &&
+        activeNetwork.isConnectedOrConnecting();
     setContentView(R.layout.activity_my_stocks);
     // The intent service is for executing immediate pulls from the Yahoo API
     // GCMTaskService can only schedule tasks, they cannot execute immediately
@@ -60,9 +70,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     if (savedInstanceState == null){
       // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
-      startService(mServiceIntent);
+      if (isConnected){
+        startService(mServiceIntent);
+      } else{
+        networkToast();
+      }
     }
-    mContext = this;
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
@@ -71,7 +84,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
-
+                //TODO:
+                // do something on item click
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);
@@ -115,24 +129,25 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mItemTouchHelper.attachToRecyclerView(recyclerView);
 
     mTitle = getTitle();
+    if (isConnected){
+      long period = 3600L;
+      long flex = 10L;
+      String periodicTag = "periodic";
 
-    long period = 3600L;
-    long flex = 10L;
-    String periodicTag = "periodic";
-
-    // create a periodic task to pull stocks once every hour after the app has been opened. This
-    // is so Widget data stays up to date.
-    PeriodicTask periodicTask = new PeriodicTask.Builder()
-        .setService(StockTaskService.class)
-        .setPeriod(period)
-        .setFlex(flex)
-        .setTag(periodicTag)
-        .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
-        .setRequiresCharging(false)
-        .build();
-    // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
-    // are updated.
-    GcmNetworkManager.getInstance(this).schedule(periodicTask);
+      // create a periodic task to pull stocks once every hour after the app has been opened. This
+      // is so Widget data stays up to date.
+      PeriodicTask periodicTask = new PeriodicTask.Builder()
+          .setService(StockTaskService.class)
+          .setPeriod(period)
+          .setFlex(flex)
+          .setTag(periodicTag)
+          .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+          .setRequiresCharging(false)
+          .build();
+      // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
+      // are updated.
+      GcmNetworkManager.getInstance(this).schedule(periodicTask);
+    }
   }
 
 
@@ -140,6 +155,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onResume() {
     super.onResume();
     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+  }
+
+  public void networkToast(){
+    Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
   }
 
   public void restoreActionBar() {

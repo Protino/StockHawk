@@ -10,4 +10,5 @@
   <string name="input_hint">FB</string>
   <string name="input_prefill"></string>
   <string name="widget_title">Today\'s Market</string>
+  <string name="network_toast">Uh-oh! This app requires an internet connection</string>
 </resources>
