@@ -1,12 +1,12 @@
 package com.sam_chordas.android.stockhawk.touch_helper;
 
-import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
 /**
  * Created by sam_chordas on 10/6/15.
  * credit to Paul Burke (ipaulpro)
+ * this class enables swipe to delete in RecyclerView
  */
 public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
   private final ItemTouchHelperAdapter mAdapter;
@@ -21,11 +21,6 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
     return true;
   }
 
-  //@Override
-  //public boolean isLongPressDragEnabled(){
-  //  return true;
-  //}
-
   @Override
   public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder){
     final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
@@ -35,7 +30,6 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
 
   @Override
   public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder sourceViewHolder, RecyclerView.ViewHolder targetViewHolder){
-    //mAdapter.onItemMove(sourceViewHolder.getAdapterPosition(), targetViewHolder.getAdapterPosition());
     return true;
   }
 

@@ -6,6 +6,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -13,19 +15,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
+import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
-import com.facebook.stetho.Stetho;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
@@ -42,33 +45,49 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
    * Used to store the last screen title. For use in {@link #restoreActionBar()}.
    */
   private CharSequence mTitle;
-  private int taskId = 0;
   private Intent mServiceIntent;
   private ItemTouchHelper mItemTouchHelper;
   private static final int CURSOR_LOADER_ID = 0;
   private QuoteCursorAdapter mCursorAdapter;
   private Context mContext;
+  private Cursor mCursor;
+  boolean isConnected;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mContext = this;
+    ConnectivityManager cm =
+        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+    isConnected = activeNetwork != null &&
+        activeNetwork.isConnectedOrConnecting();
     setContentView(R.layout.activity_my_stocks);
+    // The intent service is for executing immediate pulls from the Yahoo API
+    // GCMTaskService can only schedule tasks, they cannot execute immediately
     mServiceIntent = new Intent(this, StockIntentService.class);
     if (savedInstanceState == null){
-      Stetho.initialize(Stetho.newInitializerBuilder(this)
-              .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-              .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-              .build());
-
+      // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
-      startService(mServiceIntent);
+      if (isConnected){
+        startService(mServiceIntent);
+      } else{
+        networkToast();
+      }
     }
-    mContext = this;
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
     mCursorAdapter = new QuoteCursorAdapter(this, null);
+    recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
+            new RecyclerViewItemClickListener.OnItemClickListener() {
+              @Override public void onItemClick(View v, int position) {
+                //TODO:
+                // do something on item click
+              }
+            }));
     recyclerView.setAdapter(mCursorAdapter);
 
 
@@ -76,19 +95,37 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     fab.attachToRecyclerView(recyclerView);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        new MaterialDialog.Builder(mContext)
-            .title(R.string.symbol_search)
-            .content(R.string.content_test)
-            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
-            .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
-              @Override
-              public void onInput(MaterialDialog dialog, CharSequence input) {
-                // Do something
-              }
-            }).show();
-        mServiceIntent.putExtra("tag", "add");
-        mServiceIntent.putExtra("symbol", "entered Symbol");
-        //startService(mServiceIntent);
+        if (isConnected){
+          new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
+              .content(R.string.content_test)
+              .inputType(InputType.TYPE_CLASS_TEXT)
+              .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
+                @Override public void onInput(MaterialDialog dialog, CharSequence input) {
+                  // On FAB click, receive user input. Make sure the stock doesn't already exist
+                  // in the DB and proceed accordingly
+                  Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+                      new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
+                      new String[] { input.toString() }, null);
+                  if (c.getCount() != 0) {
+                    Toast toast =
+                        Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                            Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                    toast.show();
+                    return;
+                  } else {
+                    // Add the stock to DB
+                    mServiceIntent.putExtra("tag", "add");
+                    mServiceIntent.putExtra("symbol", input.toString());
+                    startService(mServiceIntent);
+                  }
+                }
+              })
+              .show();
+        } else {
+          networkToast();
+        }
+
       }
     });
 
@@ -97,30 +134,25 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mItemTouchHelper.attachToRecyclerView(recyclerView);
 
     mTitle = getTitle();
+    if (isConnected){
+      long period = 3600L;
+      long flex = 10L;
+      String periodicTag = "periodic";
 
-
-
-    //IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
-    //filter.addCategory(Intent.CATEGORY_DEFAULT);
-    //receiver = new ResponseReceiver();
-    //registerReceiver(receiver, filter);
-
-
-    long period = 3600L;
-    long flex = 10L;
-    String periodicTag = "periodic";
-
-
-    PeriodicTask periodicTask = new PeriodicTask.Builder()
-        .setService(StockTaskService.class)
-        .setPeriod(period)
-        .setFlex(flex)
-        .setTag(periodicTag)
-        .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
-        .setRequiresCharging(false)
-        .build();
-
-    GcmNetworkManager.getInstance(this).schedule(periodicTask);
+      // create a periodic task to pull stocks once every hour after the app has been opened. This
+      // is so Widget data stays up to date.
+      PeriodicTask periodicTask = new PeriodicTask.Builder()
+          .setService(StockTaskService.class)
+          .setPeriod(period)
+          .setFlex(flex)
+          .setTag(periodicTag)
+          .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
+          .setRequiresCharging(false)
+          .build();
+      // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
+      // are updated.
+      GcmNetworkManager.getInstance(this).schedule(periodicTask);
+    }
   }
 
 
@@ -130,30 +162,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
   }
 
-
-
-  //@Override
-  //public void onNavigationDrawerItemSelected(int position) {
-  //  // update the main content by replacing fragments
-  //  FragmentManager fragmentManager = getSupportFragmentManager();
-  //  fragmentManager.beginTransaction()
-  //      .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-  //      .commit();
-  //}
-
-  //public void onSectionAttached(int number) {
-  //  switch (number) {
-  //    case 1:
-  //      mTitle = getString(R.string.title_section1);
-  //      break;
-  //    case 2:
-  //      mTitle = getString(R.string.title_section2);
-  //      break;
-  //    case 3:
-  //      mTitle = getString(R.string.title_section3);
-  //      break;
-  //  }
- // }
+  public void networkToast(){
+    Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+  }
 
   public void restoreActionBar() {
     ActionBar actionBar = getSupportActionBar();
@@ -164,15 +175,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    //if (!mNavigationDrawerFragment.isDrawerOpen()) {
-       //Only show items in the action bar relevant to this screen
-      // if the drawer is not showing. Otherwise, let the drawer
-      // decide what to show in the action bar.
       getMenuInflater().inflate(R.menu.my_stocks, menu);
       restoreActionBar();
       return true;
-    //}
-    //return super.onCreateOptionsMenu(menu);
   }
 
   @Override
@@ -188,6 +193,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
 
     if (id == R.id.action_change_units){
+      // this is for changing stock changes from percent value to dollar value
       Utils.showPercent = !Utils.showPercent;
       this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
     }
@@ -197,6 +203,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    // This narrows the return to only the stocks that are most current.
     return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
         new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
             QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
@@ -208,6 +215,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
+    mCursor = data;
   }
 
   @Override
@@ -215,43 +223,4 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mCursorAdapter.swapCursor(null);
   }
 
-  /**
-   * A placeholder fragment containing a simple view.
-   */
-  //public static class PlaceholderFragment extends Fragment {
-  //  /**
-  //   * The fragment argument representing the section number for this
-  //   * fragment.
-  //   */
-  //  private static final String ARG_SECTION_NUMBER = "section_number";
-  //
-  //  /**
-  //   * Returns a new instance of this fragment for the given section
-  //   * number.
-  //   */
-  //  public static PlaceholderFragment newInstance(int sectionNumber) {
-  //    PlaceholderFragment fragment = new PlaceholderFragment();
-  //    Bundle args = new Bundle();
-  //    args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-  //    fragment.setArguments(args);
-  //    return fragment;
-  //  }
-  //
-  //  public PlaceholderFragment() {
-  //  }
-  //
-  //  @Override
-  //  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-  //      Bundle savedInstanceState) {
-  //    View rootView = inflater.inflate(R.layout.fragment_my_stocks, container, false);
-  //    return rootView;
-  //  }
-  //
-  //  @Override
-  //  public void onAttach(Activity activity) {
-  //    super.onAttach(activity);
-  //    ((MyStocksActivity) activity).onSectionAttached(
-  //        getArguments().getInt(ARG_SECTION_NUMBER));
-  //  }
-  //}
 }
