@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.udacity.stockhawk"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -57,7 +57,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.1.0'
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
     compile 'com.google.guava:guava:19.0'
-    compile 'com.google.android.gms:play-services-gcm:9.8.0'
     compile 'com.squareup.okio:okio:1.8.0'
     compile 'com.squareup.okhttp3:okhttp:3.3.1'
     compile 'com.yahoofinance-api:YahooFinanceAPI:3.3.0'

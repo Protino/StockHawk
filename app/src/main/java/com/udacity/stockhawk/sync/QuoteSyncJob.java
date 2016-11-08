@@ -1,14 +1,14 @@
 package com.udacity.stockhawk.sync;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.google.android.gms.gcm.GcmNetworkManager;
-import com.google.android.gms.gcm.OneoffTask;
-import com.google.android.gms.gcm.PeriodicTask;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
@@ -30,10 +30,13 @@ import yahoofinance.quotes.stock.StockQuote;
 
 public final class QuoteSyncJob {
 
-    public static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
-    public static final int PERIOD = 300;
+    static final int ONE_OFF_ID = 2;
+    private static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
+    private static final int PERIOD = 300000;
+    private static final int INITIAL_BACKOFF = 10000;
+    private static final int PERIODIC_ID = 1;
 
-    public static void getQuotes(Context context) {
+    static void getQuotes(Context context) {
 
         Timber.d("Running sync job");
 
@@ -111,15 +114,21 @@ public final class QuoteSyncJob {
         }
     }
 
-    public static void schedulePeriodic(Context context) {
+    private static void schedulePeriodic(Context context) {
         Timber.d("Scheduling a periodic task");
-        PeriodicTask.Builder builder = new PeriodicTask.Builder();
-        builder.setTag(QuoteTaskService.PERIODIC_TAG)
-                .setService(QuoteTaskService.class)
-                .setPeriod(PERIOD)
-                .setUpdateCurrent(true);
 
-        GcmNetworkManager.getInstance(context).schedule(builder.build());
+
+        JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_ID, new ComponentName(context, QuoteJobService.class));
+
+
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPeriodic(PERIOD)
+                .setBackoffCriteria(INITIAL_BACKOFF, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
+
+
+        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        scheduler.schedule(builder.build());
     }
 
 
@@ -139,12 +148,19 @@ public final class QuoteSyncJob {
             Intent nowIntent = new Intent(context, QuoteIntentService.class);
             context.startService(nowIntent);
         } else {
-            OneoffTask.Builder builder = new OneoffTask.Builder();
-            builder.setTag(QuoteTaskService.PERIODIC_TAG)
-                    .setService(QuoteTaskService.class)
-                    .setExecutionWindow(0, 60)
-                    .setUpdateCurrent(true);
-            GcmNetworkManager.getInstance(context).schedule(builder.build());
+
+            JobInfo.Builder builder = new JobInfo.Builder(ONE_OFF_ID, new ComponentName(context, QuoteJobService.class));
+
+
+            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setBackoffCriteria(INITIAL_BACKOFF, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
+
+
+            JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            scheduler.schedule(builder.build());
+
+
         }
     }
 
