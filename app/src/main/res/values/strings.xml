@@ -1,39 +1,46 @@
-<resources>
-    <string name="app_name">Stock Hawk</string>
+<resources xmlns:xliff="http://schemas.android.com/tools">
+    <string name="app_name" translatable="false">Stock Hawk</string>
 
+
+    <!--Preference related strings-->
     <string name="pref_stocks_initialized_key" translatable="false">initialized</string>
-
-    <string name="pref_stocks_key">stocks</string>
-
-    <string name="chart_no_data">No data</string>
-
-
+    <string name="pref_stocks_key" translatable="false">stocks</string>
+    <string name="pref_display_mode_absolute_key" translatable="false">absolute</string>
+    <string name="pref_display_mode_percentage_key" translatable="false">percentage</string>
+    <string name="pref_display_mode_key" translatable="false">displayMode</string>
+    <string name="action_change_units" translatable="false">@string/pref_display_mode_key</string>
     <string name="pref_display_mode_title">Display Mode</string>
-    <string name="pref_display_mode_key">displayMode</string>
     <string name="pref_display_mode_default">@string/pref_display_mode_percentage_key</string>
 
-    <string name="pref_display_mode_absolute_key">absolute</string>
-    <string name="pref_display_mode_percentage_key">percentage</string>
+    <!--Generic keys-->
+    <string name="FRAGMENT_DATA_TYPE_KEY" translatable="false">FRAGMENT_DATA_TYPE_KEY</string>
+    <string name="MONTHLY" translatable="false">MONTHLY</string>
+    <string name="DAILY" translatable="false">DAILY</string>
+    <string name="WEEKLY" translatable="false">WEEKLY</string>
+    <string name="FRAGMENT_DATA_KEY" translatable="false">FRAGMENT_DATA_KEY</string>
+    <string name="chart_no_data" translatable="false">No data</string>
 
-    <string name="default_stocks_yahoo">YHOO</string>
-    <string name="default_stocks_apple">AAPL</string>
-    <string name="default_stocks_microsoft">MSFT</string>
-    <string name="default_stocks_facebook">FB</string>
+    <!--Default stock names-->
+    <string name="default_stocks_yahoo" translatable="false">YHOO</string>
+    <string name="default_stocks_apple" translatable="false">AAPL</string>
+    <string name="default_stocks_microsoft" translatable="false">MSFT</string>
+    <string name="default_stocks_facebook" translatable="false">FB</string>
 
-
-    <string name="action_change_units">@string/pref_display_mode_key</string>
-
-
+    <!--Dialog related-->
     <string name="dialog_title">Add Stock</string>
     <string name="dialog_hint">Symbol (e.g. GOOG)</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_add">Add</string>
 
+    <!-- Error related strings-->
     <string name="error_stock_not_found">Symbol %s is invalid!</string>
     <string name="error_no_network">No network connectivity! Will load stock cursor when the network is available.</string>
     <string name="error_no_stocks">No stocks added! Hit the floating action button to add one.</string>
-
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
+
+
+    <!-- Graph related string-->
+    <string name="marker_text">%s<i> on</i> <xliff:g example="5 Jul 2017" id="date">%s</xliff:g></string>  <!--Ex: - $567 on 5 Jul 2017-->
 
 </resources>

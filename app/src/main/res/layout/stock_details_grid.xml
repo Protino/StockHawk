@@ -1,0 +1,87 @@
+<android.support.v7.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingEnd="@dimen/activity_vertical_margin"
+    android:paddingStart="@dimen/activity_vertical_margin"
+    app:columnCount="3">
+
+    <TextView
+        android:id="@+id/stock_name"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_columnSpan="2"
+        app:layout_columnWeight="1"
+        tools:text="Facebook Inc."
+        />
+
+    <TextView
+        android:id="@+id/day_highest"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="normal"
+        app:layout_columnWeight="1"
+        app:layout_gravity="right"
+        tools:text="$180"
+        />
+
+    <android.support.v4.widget.Space
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        app:layout_columnSpan="3"
+        app:layout_columnWeight="1"/>
+
+    <TextView
+        android:id="@+id/stock_exchange"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="normal"
+        app:layout_columnSpan="2"
+        app:layout_columnWeight="1"
+        tools:text="NASDAQ"
+        />
+
+    <TextView
+        android:id="@+id/day_lowest"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="normal"
+        app:layout_columnWeight="1"
+        app:layout_gravity="right"
+        tools:text="$94"/>
+
+    <android.support.v4.widget.Space
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        app:layout_columnSpan="3"
+        app:layout_columnWeight="1"/>
+
+    <TextView
+        android:id="@+id/stock_price"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:paddingEnd="8dp"
+        android:paddingStart="0dp"
+        android:textStyle="normal"
+        tools:text="$914.15"/>
+
+    <TextView
+        android:id="@+id/absolute_change"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:gravity="center_vertical"
+        android:padding="3dp"
+        android:layout_marginTop="-3dp"
+        android:elevation="4dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        tools:text="+ $0.14"/>
+    <TextView
+        android:layout_width="0dp"
+        android:text=""
+        />
+
+</android.support.v7.widget.GridLayout>

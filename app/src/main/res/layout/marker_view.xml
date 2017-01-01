@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center">
+
+    <TextView
+        android:id="@+id/marker_text"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/marker_background"
+        android:elevation="4dp"
+        android:padding="8dp"
+        android:textColor="@android:color/white"
+        tools:text="$76 on 14 July 2016"/>
+</FrameLayout>

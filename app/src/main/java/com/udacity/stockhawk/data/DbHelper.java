@@ -11,13 +11,14 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     static final String NAME = "StockHawk.db";
-    private static final int VERSION = 1;
+    private static final int VERSION = 3;
 
 
     public DbHelper(Context context) {
         super(context, NAME, null, VERSION);
     }
 
+    //Lifecycle start
     @Override
     public void onCreate(SQLiteDatabase db) {
         String builder = "CREATE TABLE " + Quote.TABLE_NAME + " (" +
@@ -26,12 +27,19 @@ public class DbHelper extends SQLiteOpenHelper {
                 Quote.COLUMN_PRICE + " REAL NOT NULL, " +
                 Quote.COLUMN_ABSOLUTE_CHANGE + " REAL NOT NULL, " +
                 Quote.COLUMN_PERCENTAGE_CHANGE + " REAL NOT NULL, " +
-                Quote.COLUMN_HISTORY + " TEXT NOT NULL, " +
+                Quote.COLUMN_MONTH_HISTORY + " TEXT NOT NULL, " +
+                Quote.COLUMN_DAY_HISTORY + " TEXT NOT NULL, " +
+                Quote.COLUMN_WEEK_HISTORY + " TEXT NOT NULL, " +
+                Quote.COLUMN_STOCK_EXCHANGE + " TEXT NOT NULL, " +
+                Quote.COLUMN_STOCK_NAME + " TEXT NOT NULL, " +
+                Quote.COLUMN_DAY_HIGHEST + " REAL NOT NULL, " +
+                Quote.COLUMN_DAY_LOWEST + " REAL NOT NULL, " +
                 "UNIQUE (" + Quote.COLUMN_SYMBOL + ") ON CONFLICT REPLACE);";
 
         db.execSQL(builder);
 
     }
+//Lifecycle end
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

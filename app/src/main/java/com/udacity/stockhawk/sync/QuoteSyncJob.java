@@ -42,8 +42,6 @@ public final class QuoteSyncJob {
 
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
-        from.add(Calendar.YEAR, -2);
-
         try {
 
             Set<String> stockPref = PrefUtils.getStocks(context);
@@ -71,34 +69,40 @@ public final class QuoteSyncJob {
                 Stock stock = quotes.get(symbol);
                 StockQuote quote = stock.getQuote();
 
+
                 float price = quote.getPrice().floatValue();
+                float dayLowest = quote.getDayLow().floatValue();
+                float dayHighest = quote.getDayHigh().floatValue();
                 float change = quote.getChange().floatValue();
                 float percentChange = quote.getChangeInPercent().floatValue();
+                String stockName = stock.getName();
+                String exchangeName = stock.getStockExchange();
 
-                // WARNING! Don't request historical data for a stock that doesn't exist!
-                // The request will hang forever X_x
-                List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
+                from.add(Calendar.MONTH, -5);
+                String monthHistory = getHistory(stock, from, to, Interval.MONTHLY);
 
-                StringBuilder historyBuilder = new StringBuilder();
 
-                for (HistoricalQuote it : history) {
-                    historyBuilder.append(it.getDate().getTimeInMillis());
-                    historyBuilder.append(", ");
-                    historyBuilder.append(it.getClose());
-                    historyBuilder.append("\n");
-                }
+                from = Calendar.getInstance();
+                from.add(Calendar.DAY_OF_YEAR, -35);
+                String weekHistory = getHistory(stock, from, to, Interval.WEEKLY);
+
+                from = Calendar.getInstance();
+                from.add(Calendar.DAY_OF_YEAR, -8);
+                String dayHistory = getHistory(stock, from, to, Interval.DAILY);
 
                 ContentValues quoteCV = new ContentValues();
                 quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
                 quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
                 quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
                 quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
-
-
-                quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
-
+                quoteCV.put(Contract.Quote.COLUMN_MONTH_HISTORY, monthHistory);
+                quoteCV.put(Contract.Quote.COLUMN_DAY_HISTORY, dayHistory);
+                quoteCV.put(Contract.Quote.COLUMN_WEEK_HISTORY, weekHistory);
+                quoteCV.put(Contract.Quote.COLUMN_DAY_HIGHEST, dayHighest);
+                quoteCV.put(Contract.Quote.COLUMN_DAY_LOWEST, dayLowest);
+                quoteCV.put(Contract.Quote.COLUMN_STOCK_NAME, stockName);
+                quoteCV.put(Contract.Quote.COLUMN_STOCK_EXCHANGE, exchangeName);
                 quoteCVs.add(quoteCV);
-
             }
 
             context.getContentResolver()
@@ -112,6 +116,20 @@ public final class QuoteSyncJob {
         } catch (IOException exception) {
             Timber.e(exception, "Error fetching stock quotes");
         }
+    }
+
+    private static String getHistory(Stock stock, Calendar from, Calendar to, Interval interval) throws IOException {
+
+        List<HistoricalQuote> history = stock.getHistory(from, to, interval);
+
+        StringBuilder historyBuilder = new StringBuilder();
+        for (HistoricalQuote it : history) {
+            historyBuilder.append(it.getDate().getTimeInMillis());
+            historyBuilder.append(":");
+            historyBuilder.append(it.getClose());
+            historyBuilder.append("$");
+        }
+        return historyBuilder.toString();
     }
 
     private static void schedulePeriodic(Context context) {
@@ -133,10 +151,8 @@ public final class QuoteSyncJob {
 
 
     synchronized public static void initialize(final Context context) {
-
         schedulePeriodic(context);
         syncImmediately(context);
-
     }
 
     synchronized public static void syncImmediately(Context context) {
@@ -148,19 +164,11 @@ public final class QuoteSyncJob {
             Intent nowIntent = new Intent(context, QuoteIntentService.class);
             context.startService(nowIntent);
         } else {
-
             JobInfo.Builder builder = new JobInfo.Builder(ONE_OFF_ID, new ComponentName(context, QuoteJobService.class));
-
-
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setBackoffCriteria(INITIAL_BACKOFF, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
-
-
             JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-
             scheduler.schedule(builder.build());
-
-
         }
     }
 
