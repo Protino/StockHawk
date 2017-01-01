@@ -42,6 +42,23 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
+        <!-- Widget receiver and services-->
+        <receiver
+            android:name=".widget.StockWidgetProvider"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.udacity.stockhawk.ACTION_DATA_UPDATED"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stock_widget_provider_info"/>
+        </receiver>
+
+        <service
+            android:name=".widget.StockWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
     </application>
 

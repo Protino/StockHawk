@@ -13,6 +13,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.udacity.stockhawk.R;
@@ -77,7 +78,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
-    //Lifecycle end
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -193,17 +201,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             fragmentList.add(fragment);
             fragmentTitleList.add(title);
         }
-
-//        @Override
-//        public Object instantiateItem(ViewGroup container, int position) {
-//            Object obj = super.instantiateItem(container, position);
-//            if (obj instanceof Fragment) {
-//                Fragment fragment = (Fragment) obj;
-//                String tag = fragment.getTag();
-//                fragmentTags.put(position, tag);
-//            }
-//            return obj;
-//        }
 
         public Fragment getFragment(int position) {
             String tag = fragmentTags.get(position);

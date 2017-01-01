@@ -67,13 +67,7 @@ public class StockProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown URI:" + uri);
         }
-
         returnCursor.setNotificationUri(getContext().getContentResolver(), uri);
-
-//        if (db.isOpen()) {
-//            db.close();
-//        }
-
         return returnCursor;
     }
 
