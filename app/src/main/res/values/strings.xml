@@ -3,14 +3,15 @@
 
 
     <!--Preference related strings-->
-    <string name="pref_stocks_initialized_key" translatable="false">initialized</string>
-    <string name="pref_stocks_key" translatable="false">stocks</string>
-    <string name="pref_display_mode_absolute_key" translatable="false">absolute</string>
-    <string name="pref_display_mode_percentage_key" translatable="false">percentage</string>
-    <string name="pref_display_mode_key" translatable="false">displayMode</string>
+    <string name="pref_stocks_initialized_key" translatable="false">INITIALIZED</string>
+    <string name="pref_stocks_key" translatable="false">STOCKS</string>
+    <string name="pref_display_mode_absolute_key" translatable="false">ABSOLUTE</string>
+    <string name="pref_display_mode_percentage_key" translatable="false">PERCENTAGE</string>
+    <string name="pref_display_mode_key" translatable="false">DISPLAY_MODE</string>
     <string name="action_change_units" translatable="false">@string/pref_display_mode_key</string>
     <string name="pref_display_mode_title">Display Mode</string>
-    <string name="pref_display_mode_default">@string/pref_display_mode_percentage_key</string>
+    <string name="pref_display_mode_default" translatable="false">@string/pref_display_mode_percentage_key</string>
+    <string name="pref_stock_status_key" translatable="false">STOCK_STATUS</string>
 
     <!--Generic keys-->
     <string name="FRAGMENT_DATA_TYPE_KEY" translatable="false">FRAGMENT_DATA_TYPE_KEY</string>
@@ -18,7 +19,7 @@
     <string name="DAILY" translatable="false">DAILY</string>
     <string name="WEEKLY" translatable="false">WEEKLY</string>
     <string name="FRAGMENT_DATA_KEY" translatable="false">FRAGMENT_DATA_KEY</string>
-    <string name="chart_no_data" translatable="false">No data</string>
+    <string name="chart_no_data">No data</string>
 
     <!--Default stock names-->
     <string name="default_stocks_yahoo" translatable="false">YHOO</string>
@@ -33,16 +34,18 @@
     <string name="dialog_add">Add</string>
 
     <!-- Error related strings-->
-    <string name="error_stock_not_found">Symbol %s is invalid!</string>
-    <string name="error_no_network">No network connectivity! Will load stock cursor when the network is available.</string>
-    <string name="error_no_stocks">No stocks added! Hit the floating action button to add one.</string>
-    <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
-    <string name="toast_no_connectivity">Will refresh when network available.</string>
+    <string name="toast_stock_invalid">Symbol %s is invalid!</string>
+    <string name="error_no_network">No network connectivity! Will load information when the network is available.</string>
+    <string name="error_no_stocks">No stocks added! Hit the plus button below to add one.</string>
+    <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when the network is available.</string>
+    <string name="toast_no_connectivity">Will refresh when the network is available.</string>
+    <string name="empty_stock_list">Stock information is not available.</string>
+    <string name="error_server_down">No stock information available. The server is not returning data.</string>
+    <string name="error_server_invalid">No stock information available. The server is not returning valid data. Please check for an updated version of Stock Hawk.</string>
 
 
     <!-- Graph related string-->
-    <string name="marker_text">%s<i> on</i> <xliff:g example="5 Jul 2017" id="date">%s</xliff:g></string>
-    <string name="empty_stock_list">Stock information not available.</string>
-    <string name="widget_label">Stock Details</string>  <!--Ex: - $567 on 5 Jul 2017-->
+    <string name="marker_text">%s<i> on</i> <xliff:g example="5 Jul 2017" id="date">%s</xliff:g></string><!--Ex: - $567 on 5 Jul 2017-->
+    <string name="widget_label">Stock Details</string>
 
 </resources>

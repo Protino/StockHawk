@@ -2,11 +2,13 @@ package com.udacity.stockhawk.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -30,22 +32,18 @@ import com.udacity.stockhawk.sync.QuoteSyncJob;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
         StockAdapter.StockAdapterOnClickHandler {
 
     private static final int STOCK_LOADER = 1;
     //@formatter:off
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-    @BindView(R.id.swipe_refresh)
-    SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.error)
-    TextView error;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.swipe_refresh) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.error) TextView error;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     //@formatter:on
@@ -72,6 +70,35 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         QuoteSyncJob.initialize(this);
         getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
 
+        setUpDeletionOnSlide();
+
+        getSupportActionBar().setTitle(R.string.app_name);
+    }
+
+    @Override
+    protected void onResume() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_settings, menu);
+        MenuItem item = menu.findItem(R.id.action_change_units);
+        setDisplayModeMenuItemIcon(item);
+        return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
+    }
+//Lifecycle end
+
+    private void setUpDeletionOnSlide() {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -84,20 +111,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 PrefUtils.removeStock(MainActivity.this, symbol);
                 // TODO: 11/28/2016 Add undo action
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                updateEmptyView();
             }
         }).attachToRecyclerView(recyclerView);
-
-        getSupportActionBar().setTitle(R.string.app_name);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_settings, menu);
-        MenuItem item = menu.findItem(R.id.action_change_units);
-        setDisplayModeMenuItemIcon(item);
-        return true;
-    }
-//Lifecycle end
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -114,8 +131,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onClick(String symbol) {
-        Timber.d("Symbol clicked: %s", symbol);
-        //create uri and pass that to the activity
         Uri stockUri = Contract.Quote.makeUriForStock(symbol);
         Intent intent = new Intent(this, DetailActivity.class);
         intent.setData(stockUri);
@@ -124,24 +139,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onRefresh() {
-
         QuoteSyncJob.syncImmediately(this);
-
-        if (!networkUp() && adapter.getItemCount() == 0) {
-            swipeRefreshLayout.setRefreshing(false);
-            error.setText(getString(R.string.error_no_network));
-            error.setVisibility(View.VISIBLE);
-        } else if (!networkUp()) {
-            swipeRefreshLayout.setRefreshing(false);
-            Toast.makeText(this, R.string.toast_no_connectivity, Toast.LENGTH_LONG).show();
-        } else if (PrefUtils.getStocks(this).size() == 0) {
-            Timber.d("WHYAREWEHERE");
-            swipeRefreshLayout.setRefreshing(false);
-            error.setText(getString(R.string.error_no_stocks));
-            error.setVisibility(View.VISIBLE);
-        } else {
-            error.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -155,15 +153,50 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         swipeRefreshLayout.setRefreshing(false);
-        if (data.getCount() != 0) {
-            error.setVisibility(View.GONE);
-        }
+        updateEmptyView();
         adapter.setCursor(data);
+    }
+
+    private void updateEmptyView() {
+        swipeRefreshLayout.setVisibility(View.GONE);
+        int message = R.string.empty_stock_list;
+
+        if (adapter.getItemCount() == 0) {
+            @QuoteSyncJob.StockStatus int status = PrefUtils.getStockStatus(this);
+            switch (status) {
+                case QuoteSyncJob.STOCK_STATUS_EMPTY:
+                    message = R.string.error_no_stocks;
+                    break;
+                case QuoteSyncJob.STOCK_STATUS_SERVER_DOWN:
+                    message = R.string.error_server_down;
+                    break;
+                case QuoteSyncJob.STOCK_STATUS_SERVER_INVALID:
+                    message = R.string.error_server_invalid;
+                    break;
+                case QuoteSyncJob.STOCK_STATUS_UNKNOWN:
+                    message = R.string.empty_stock_list;
+                    break;
+                default:
+                    message = R.string.empty_stock_list;
+                    break;
+            }
+            if (!networkUp()) message = R.string.error_no_network;
+        } else if (!networkUp()) {
+            message = R.string.error_no_network;
+            Toast.makeText(this, R.string.toast_no_connectivity, Toast.LENGTH_LONG).show();
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+        } else {
+            error.setVisibility(View.GONE);
+            swipeRefreshLayout.setRefreshing(false);
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+        }
+        error.setText(message);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         swipeRefreshLayout.setRefreshing(false);
+        updateEmptyView();
         adapter.setCursor(null);
     }
 
@@ -200,5 +233,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else {
             item.setIcon(R.drawable.ic_dollar);
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_stock_status_key))) updateEmptyView();
     }
 }

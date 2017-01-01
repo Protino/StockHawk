@@ -1,18 +1,27 @@
 package com.udacity.stockhawk.sync;
 
+import android.annotation.SuppressLint;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
+import android.widget.Toast;
 
+import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -28,14 +37,24 @@ import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.stock.StockQuote;
 
+import static android.os.Looper.getMainLooper;
+
 public final class QuoteSyncJob {
 
-    static final int ONE_OFF_ID = 2;
     public static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
+    public static final int STOCK_STATUS_OK = 0;
+    public static final int STOCK_STATUS_SERVER_DOWN = 1;
+    public static final int STOCK_STATUS_SERVER_INVALID = 2;
+    public static final int STOCK_STATUS_UNKNOWN = 3;
+    public static final int STOCK_STATUS_INVALID = 4;
+    public static final int STOCK_STATUS_EMPTY = 5;
+    static final int ONE_OFF_ID = 2;
     private static final int PERIOD = 300000;
     private static final int INITIAL_BACKOFF = 10000;
     private static final int PERIODIC_ID = 1;
+    private static boolean invalidFlag = false;
 
+    @SuppressLint("BinaryOperationInTimber")
     static void getQuotes(Context context) {
 
         Timber.d("Running sync job");
@@ -49,28 +68,42 @@ public final class QuoteSyncJob {
             stockCopy.addAll(stockPref);
             String[] stockArray = stockPref.toArray(new String[stockPref.size()]);
 
-            Timber.d(stockCopy.toString());
-
             if (stockArray.length == 0) {
+                setStockStatus(context, STOCK_STATUS_EMPTY);
                 return;
             }
 
             Map<String, Stock> quotes = YahooFinance.get(stockArray);
             Iterator<String> iterator = stockCopy.iterator();
 
-            Timber.d(quotes.toString());
+            if (quotes.isEmpty()) {
+                setStockStatus(context, STOCK_STATUS_SERVER_DOWN);
+                return;
+            }
 
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
-
-
                 Stock stock = quotes.get(symbol);
-                StockQuote quote = stock.getQuote();
+                StockQuote quote = null;
+                float price = 0;
+                try {
+                    quote = stock.getQuote();
+                    price = quote.getPrice().floatValue();
+                } catch (NullPointerException exception) {
+                    Timber.e(exception, "Incorrect stock symbol entered : " + symbol);
+                    showErrorToast(context, symbol);
+                    PrefUtils.removeStock(context, symbol);
+                    if (PrefUtils.getStocks(context).size() == 0) {
+                        setStockStatus(context, STOCK_STATUS_EMPTY);
+                    } else {
+                        setStockStatus(context, STOCK_STATUS_INVALID);
+                    }
+                    invalidFlag = true;
+                    continue;
+                }
 
-
-                float price = quote.getPrice().floatValue();
                 float dayLowest = quote.getDayLow().floatValue();
                 float dayHighest = quote.getDayHigh().floatValue();
                 float change = quote.getChange().floatValue();
@@ -112,10 +145,24 @@ public final class QuoteSyncJob {
 
             Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
             context.sendBroadcast(dataUpdatedIntent);
-
+            if (!invalidFlag) setStockStatus(context, STOCK_STATUS_OK);
         } catch (IOException exception) {
             Timber.e(exception, "Error fetching stock quotes");
+            setStockStatus(context, STOCK_STATUS_SERVER_DOWN);
+        } catch (Exception e) {
+            Timber.e(e, "Unknown Error");
+            setStockStatus(context, STOCK_STATUS_UNKNOWN);
         }
+    }
+
+    private static void showErrorToast(final Context context, final String symbol) {
+        Handler mHandler = new Handler(getMainLooper());
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, String.format(context.getString(R.string.toast_stock_invalid), symbol), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private static String getHistory(Stock stock, Calendar from, Calendar to, Interval interval) throws IOException {
@@ -165,5 +212,24 @@ public final class QuoteSyncJob {
         }
     }
 
+    /**
+     * Sets the stock status into shared preference.
+     *
+     * @param c              Context to get the PreferenceManager from.
+     * @param setStockStatus The IntDef value to set
+     */
+    @SuppressLint("CommitPrefEdits")
+    static private void setStockStatus(Context c, @StockStatus int setStockStatus) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putInt(c.getString(R.string.pref_stock_status_key), setStockStatus);
+        spe.commit();
+    }
+
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({STOCK_STATUS_OK, STOCK_STATUS_SERVER_DOWN, STOCK_STATUS_SERVER_INVALID, STOCK_STATUS_INVALID, STOCK_STATUS_UNKNOWN, STOCK_STATUS_EMPTY})
+    public @interface StockStatus {
+    }
 
 }
