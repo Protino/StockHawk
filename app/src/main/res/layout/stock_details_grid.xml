@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:paddingEnd="@dimen/activity_vertical_margin"
     android:paddingStart="@dimen/activity_vertical_margin"
     app:columnCount="3">
@@ -12,14 +12,15 @@
         android:id="@+id/stock_name"
         android:textColor="@color/white"
         android:textSize="24sp"
+        android:maxLength="21"
+        android:ellipsize="end"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"
-        tools:text="Facebook Inc."
+        tools:text="Microsoft Corporation"
         />
 
     <TextView
         android:id="@+id/day_highest"
-        android:gravity="center_horizontal"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="normal"
@@ -62,26 +63,25 @@
 
     <TextView
         android:id="@+id/stock_price"
-        android:textColor="@color/white"
-        android:textSize="24sp"
         android:paddingEnd="8dp"
         android:paddingStart="0dp"
+        android:textColor="@color/white"
+        android:textSize="24sp"
         android:textStyle="normal"
         tools:text="$914.15"/>
 
     <TextView
         android:id="@+id/absolute_change"
         android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
-        android:gravity="center_vertical"
-        android:padding="3dp"
         android:layout_marginTop="-3dp"
         android:elevation="4dp"
+        android:padding="3dp"
         android:textColor="@color/white"
         android:textSize="16sp"
         tools:text="+ $0.14"/>
+
     <TextView
         android:layout_width="0dp"
         android:text=""
         />
-
 </android.support.v7.widget.GridLayout>

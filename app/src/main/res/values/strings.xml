@@ -47,5 +47,6 @@
     <!-- Graph related string-->
     <string name="marker_text">%s<i> on</i> <xliff:g example="5 Jul 2017" id="date">%s</xliff:g></string><!--Ex: - $567 on 5 Jul 2017-->
     <string name="widget_label">Stock Details</string>
+    <string name="loading_data">Loading data. Please wait…</string>
 
 </resources>

@@ -57,8 +57,6 @@ public final class QuoteSyncJob {
     @SuppressLint("BinaryOperationInTimber")
     static void getQuotes(Context context) {
 
-        Timber.d("Running sync job");
-
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
         try {
@@ -86,11 +84,26 @@ public final class QuoteSyncJob {
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
                 Stock stock = quotes.get(symbol);
-                StockQuote quote = null;
-                float price = 0;
+                StockQuote quote;
+                float change;
+                float price;
+                float dayLowest;
+                float dayHighest;
+                float percentChange;
+                String stockName;
+                String exchangeName;
                 try {
                     quote = stock.getQuote();
                     price = quote.getPrice().floatValue();
+
+
+                    dayLowest = quote.getDayLow().floatValue();
+                    dayHighest = quote.getDayHigh().floatValue();
+
+                    change = quote.getChange().floatValue();
+                    percentChange = quote.getChangeInPercent().floatValue();
+                    stockName = stock.getName();
+                    exchangeName = stock.getStockExchange();
                 } catch (NullPointerException exception) {
                     Timber.e(exception, "Incorrect stock symbol entered : " + symbol);
                     showErrorToast(context, symbol);
@@ -103,13 +116,6 @@ public final class QuoteSyncJob {
                     invalidFlag = true;
                     continue;
                 }
-
-                float dayLowest = quote.getDayLow().floatValue();
-                float dayHighest = quote.getDayHigh().floatValue();
-                float change = quote.getChange().floatValue();
-                float percentChange = quote.getChangeInPercent().floatValue();
-                String stockName = stock.getName();
-                String exchangeName = stock.getStockExchange();
 
                 from.add(Calendar.MONTH, -5);
                 String monthHistory = getHistory(stock, from, to, Interval.MONTHLY);

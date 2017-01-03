@@ -22,6 +22,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,8 +45,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.swipe_refresh) SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.error) TextView error;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.progressBarLayout) LinearLayout progressBarLayout;
+    @BindView(R.id.content_main) LinearLayout contentLayout;
     //@formatter:on
     private StockAdapter adapter;
 
@@ -62,25 +64,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         adapter = new StockAdapter(this, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setRefreshing(true);
+
         onRefresh();
-
         QuoteSyncJob.initialize(this);
-        getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
-
         setUpDeletionOnSlide();
-
         getSupportActionBar().setTitle(R.string.app_name);
     }
 
     @Override
     protected void onResume() {
+        getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,13 +153,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         swipeRefreshLayout.setRefreshing(false);
-        updateEmptyView();
         adapter.setCursor(data);
+        updateEmptyView();
     }
 
     private void updateEmptyView() {
         swipeRefreshLayout.setVisibility(View.GONE);
-        int message = R.string.empty_stock_list;
+        contentLayout.setVisibility(View.GONE);
+        progressBarLayout.setVisibility(View.VISIBLE);
+        int message;
 
         if (adapter.getItemCount() == 0) {
             @QuoteSyncJob.StockStatus int status = PrefUtils.getStockStatus(this);
@@ -177,12 +179,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     message = R.string.empty_stock_list;
                     break;
                 default:
-                    message = R.string.empty_stock_list;
+                    message = R.string.loading_data;
                     break;
             }
             if (!networkUp()) message = R.string.error_no_network;
+            if (PrefUtils.getStocks(this).size() == 0) message = R.string.error_no_stocks;
+            error.setText(message);
         } else if (!networkUp()) {
-            message = R.string.error_no_network;
             Toast.makeText(this, R.string.toast_no_connectivity, Toast.LENGTH_LONG).show();
             swipeRefreshLayout.setVisibility(View.VISIBLE);
         } else {
@@ -190,7 +193,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             swipeRefreshLayout.setRefreshing(false);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
         }
-        error.setText(message);
+        contentLayout.setVisibility(View.VISIBLE);
+        progressBarLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -237,6 +241,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_stock_status_key))) updateEmptyView();
+        if (key.equals(getString(R.string.pref_stock_status_key))) {
+            updateEmptyView();
+        }
     }
 }
