@@ -26,6 +26,7 @@
 
         <TextView
             android:id="@+id/price"
+            android:transitionName="@string/stock_price_transition_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10sp"
@@ -33,6 +34,7 @@
 
         <TextView
             android:id="@+id/change"
+            android:transitionName="@string/stock_change_transition_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/percent_change_pill_green"

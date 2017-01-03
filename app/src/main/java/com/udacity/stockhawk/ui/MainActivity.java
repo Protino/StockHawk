@@ -10,9 +10,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +25,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +41,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
-        StockAdapter.StockAdapterOnClickHandler {
+        StockAdapter.StockAdapterOnClickHandler, ViewTreeObserver.OnPreDrawListener {
 
     private static final int STOCK_LOADER = 1;
     //@formatter:off
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        supportPostponeEnterTransition();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -130,11 +134,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onClick(String symbol) {
+    public void onClick(String symbol, StockAdapter.StockViewHolder viewHolder) {
         Uri stockUri = Contract.Quote.makeUriForStock(symbol);
         Intent intent = new Intent(this, DetailActivity.class);
         intent.setData(stockUri);
-        startActivity(intent);
+        Pair<View, String> priceViewPair = Pair.create((View) viewHolder.price, getString(R.string.stock_price_transition_name));
+        Pair<View, String> changeViewPair = Pair.create((View) viewHolder.change, getString(R.string.stock_change_transition_name));
+        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this, priceViewPair,changeViewPair);
+
+        ActivityCompat.startActivity(this, intent, optionsCompat.toBundle());
     }
 
     @Override
@@ -155,12 +164,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         swipeRefreshLayout.setRefreshing(false);
         adapter.setCursor(data);
         updateEmptyView();
+        if (data.getCount() == 0)
+            supportStartPostponedEnterTransition();
+        else
+            recyclerView.getViewTreeObserver().addOnPreDrawListener(this);
     }
 
     private void updateEmptyView() {
         swipeRefreshLayout.setVisibility(View.GONE);
-        contentLayout.setVisibility(View.GONE);
-        progressBarLayout.setVisibility(View.VISIBLE);
+        hideLoadingLayout(false);
         int message;
 
         if (adapter.getItemCount() == 0) {
@@ -193,15 +205,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             swipeRefreshLayout.setRefreshing(false);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
         }
-        contentLayout.setVisibility(View.VISIBLE);
-        progressBarLayout.setVisibility(View.GONE);
+        hideLoadingLayout(true);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         swipeRefreshLayout.setRefreshing(false);
-        updateEmptyView();
         adapter.setCursor(null);
+        updateEmptyView();
     }
 
     void addStock(String symbol) {
@@ -244,5 +255,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (key.equals(getString(R.string.pref_stock_status_key))) {
             updateEmptyView();
         }
+    }
+
+    @Override
+    public boolean onPreDraw() {
+        if (PrefUtils.getStocks(this).size() != 0) {
+            if (recyclerView.getChildCount() > 0) {
+                recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                supportStartPostponedEnterTransition();
+                hideLoadingLayout(true);
+                return true;
+            }
+            return false;
+        }
+        supportStartPostponedEnterTransition();
+        return true;
+    }
+
+    private void hideLoadingLayout(boolean b) {
+        contentLayout.setVisibility(b ? View.VISIBLE : View.GONE);
+        progressBarLayout.setVisibility(b ? View.GONE : View.VISIBLE);
     }
 }

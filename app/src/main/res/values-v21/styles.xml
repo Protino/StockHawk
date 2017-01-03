@@ -7,4 +7,14 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="toolbarStyle">@style/Toolbar</item>
     </style>
+
+    <style name="AppTheme.Details" parent="AppTheme">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/details_window_transition</item>
+        <item name="android:windowReturnTransition">@transition/details_window_transition</item>
+    </style>
+
+    <style name="AppTheme.Main" parent="AppTheme">
+        <item name="android:windowContentTransitions">true</item>
+    </style>
 </resources>

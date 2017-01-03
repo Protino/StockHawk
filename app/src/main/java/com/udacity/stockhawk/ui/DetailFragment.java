@@ -87,7 +87,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
         context = getContext();
-        if (historyData!=null)
+        if (historyData != null)
             setUpLineChart();
         return rootView;
     }
@@ -140,6 +140,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             //set up the chart with history data
             historyData = data.getString(dataColumnPosition);
             setUpLineChart();
+            getActivity().supportStartPostponedEnterTransition();
         }
     }
 

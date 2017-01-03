@@ -49,4 +49,8 @@
     <string name="widget_label">Stock Details</string>
     <string name="loading_data">Loading data. Please wait…</string>
 
+    <!--Shared element transitions-->
+    <string name="stock_price_transition_name" translatable="false">TN_STOCK_PRICE</string>
+    <string name="stock_change_transition_name">TN_STOCK_CHANGE</string>
+
 </resources>

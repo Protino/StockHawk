@@ -60,11 +60,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportPostponeEnterTransition();
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_detail);
-
         ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

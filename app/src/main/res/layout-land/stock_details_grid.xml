@@ -46,17 +46,18 @@
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="normal"
+        android:transitionName="@string/stock_price_transition_name"
         app:layout_columnWeight="1"
         app:layout_gravity="fill_horizontal"
         tools:text="$914.15"/>
 
     <TextView
         android:id="@+id/day_highest"
+        android:gravity="center_horizontal"
         android:textColor="@color/white"
         android:textSize="24sp"
-        app:layout_columnWeight="1"
-        android:gravity="center_horizontal"
         android:textStyle="normal"
+        app:layout_columnWeight="1"
         app:layout_gravity="center_horizontal"
         tools:text="$180"
         />
@@ -73,16 +74,17 @@
         android:padding="3dp"
         android:textColor="@color/white"
         android:textSize="16sp"
+        android:transitionName="@string/stock_change_transition_name"
         app:layout_gravity="center_horizontal"
         tools:text="+ $0.14"/>
 
     <TextView
         android:id="@+id/day_lowest"
-        android:textColor="@color/white"
         android:gravity="center_horizontal"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_gravity="center_horizontal"
         android:textStyle="normal"
+        app:layout_gravity="center_horizontal"
         tools:text="$94"/>
 
     <android.support.v4.widget.Space

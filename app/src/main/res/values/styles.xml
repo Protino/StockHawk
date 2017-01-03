@@ -11,4 +11,7 @@
         <item name="popupTheme">@style/Theme.AppCompat.Light</item>
     </style>
 
+    <!-- Empty styles to support older versions-->
+    <style name="AppTheme.Details" parent="AppTheme"/>
+    <style name="AppTheme.Main" parent="AppTheme"/>
 </resources>
