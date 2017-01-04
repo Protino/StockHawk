@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         updateEmptyView();
     }
 
-    void addStock(String symbol) {
+    public void addStock(String symbol) {
         if (symbol != null && !symbol.isEmpty()) {
 
             if (BasicUtils.isNetworkUp(this)) {

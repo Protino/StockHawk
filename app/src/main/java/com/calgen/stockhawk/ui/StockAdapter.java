@@ -43,12 +43,12 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
         percentageFormat.setPositivePrefix("+");
     }
 
-    void setCursor(Cursor cursor) {
+    public void setCursor(Cursor cursor) {
         this.cursor = cursor;
         notifyDataSetChanged();
     }
 
-    String getSymbolAtPosition(int position) {
+    public String getSymbolAtPosition(int position) {
 
         cursor.moveToPosition(position);
         return cursor.getString(Contract.Quote.POSITION_SYMBOL);
@@ -115,15 +115,11 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
     class StockViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.symbol)
-        TextView symbol;
-
-        @BindView(R.id.price)
-        TextView price;
-
-        @BindView(R.id.change)
-        TextView change;
-
+        //@formatter:off
+        @BindView(R.id.symbol) public TextView symbol;
+        @BindView(R.id.price) public TextView price;
+        @BindView(R.id.change) public TextView change;
+        //@formatter:on
         StockViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

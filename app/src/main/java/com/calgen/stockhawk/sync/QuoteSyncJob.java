@@ -55,7 +55,7 @@ public final class QuoteSyncJob {
     private static boolean invalidFlag = false;
 
     @SuppressLint("BinaryOperationInTimber")
-    static void getQuotes(Context context) {
+    public static void getQuotes(Context context) {
 
         Calendar from;
         Calendar to = Calendar.getInstance();

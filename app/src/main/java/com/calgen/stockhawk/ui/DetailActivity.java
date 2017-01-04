@@ -40,7 +40,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static int LOADER_ID = 0;
     //@formatter:off
     @State(CustomBundler.class) public Map<Integer, String> fragmentTags = new HashMap<>();
-    @State Boolean dataLoaded = false;
+    @State public Boolean dataLoaded = false;
     @BindView(R.id.toolbar) public Toolbar toolbar;
     @BindView(R.id.stock_name) public TextView tvStockName;
     @BindView(R.id.stock_exchange) public TextView tvStockExchange;
