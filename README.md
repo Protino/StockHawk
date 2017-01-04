@@ -9,10 +9,8 @@ STOCK HAWK
 
 ### About
 This application is part of the [Udacity Android Developer Nanodegree].
-This project was meant to convert a functional app into a production ready
+This project was all about taking a functional app into a production ready
 app.
-
-These were instructions and guide given before the project :
 
 ```
 Project Overview:
@@ -26,11 +24,11 @@ What Will I Learn?
  In this project, you will:
 
  • Diagnose existing issues with an app.
- •Make an app accessible to sight-impaired users.
- •Allow your app to be localized for distribution in other countries.
- •Handle error cases in Android.
- •Add a widget to your app experience.
- •Leverage the functionality of a library in your app.
+ • Make an app accessible to sight-impaired users.
+ • Allow your app to be localized for distribution in other countries.
+ • Handle error cases in Android.
+ • Add a widget to your app experience.
+ • Leverage the functionality of a library in your app.
 ```
 
 ### Screenshots
