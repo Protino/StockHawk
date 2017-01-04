@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.data;
+package com.calgen.stockhawk.data;
 
 
 import android.net.Uri;
@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 
 public class Contract {
 
-    public static final String AUTHORITY = "com.udacity.stockhawk";
+    public static final String AUTHORITY = "com.calgen.stockhawk";
 
     public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
 

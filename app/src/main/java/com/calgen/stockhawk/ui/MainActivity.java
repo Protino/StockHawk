@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.ui;
+package com.calgen.stockhawk.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,11 +27,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.data.Contract;
-import com.udacity.stockhawk.data.PrefUtils;
-import com.udacity.stockhawk.sync.QuoteSyncJob;
-import com.udacity.stockhawk.utils.BasicUtils;
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.data.Contract;
+import com.calgen.stockhawk.data.PrefUtils;
+import com.calgen.stockhawk.sync.QuoteSyncJob;
+import com.calgen.stockhawk.utils.BasicUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -109,10 +109,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
-                PrefUtils.removeStock(MainActivity.this, symbol);
+                int stockSize = PrefUtils.removeStock(MainActivity.this, symbol);
                 // TODO: 11/28/2016 Add undo action
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
-                updateEmptyView();
+                if (stockSize == 0) {
+                    adapter.setCursor(null);
+                    updateEmptyView();
+                }
             }
         }).attachToRecyclerView(recyclerView);
     }
@@ -192,8 +195,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     break;
             }
             if (!BasicUtils.isNetworkUp(this)) message = R.string.error_no_network;
-            if (PrefUtils.getStocks(this).size() == 0) message = R.string.error_no_stocks;
+            if(PrefUtils.getStocks(this).size()==0) message = R.string.error_no_stocks;
             error.setText(message);
+            error.setVisibility(View.VISIBLE);
         } else if (!BasicUtils.isNetworkUp(this)) {
             Toast.makeText(this, R.string.toast_no_connectivity, Toast.LENGTH_LONG).show();
             swipeRefreshLayout.setVisibility(View.VISIBLE);
@@ -221,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             }
-
             PrefUtils.addStock(this, symbol);
             QuoteSyncJob.syncImmediately(this);
         }
@@ -232,12 +235,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void setDisplayModeMenuItemIcon(MenuItem item) {
-        if (PrefUtils.getDisplayMode(this)
-                .equals(getString(R.string.pref_display_mode_absolute_key))) {
-            item.setIcon(R.drawable.ic_percentage);
-        } else {
-            item.setIcon(R.drawable.ic_dollar);
-        }
+        item.setIcon(PrefUtils.getDisplayMode(this)
+                .equals(getString(R.string.pref_display_mode_absolute_key))
+                ? R.drawable.ic_percentage
+                : R.drawable.ic_dollar);
     }
 
     @Override

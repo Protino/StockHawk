@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.ui;
+package com.calgen.stockhawk.ui;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,9 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.data.Contract;
-import com.udacity.stockhawk.utils.CustomBundler;
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.data.Contract;
+import com.calgen.stockhawk.utils.CustomBundler;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

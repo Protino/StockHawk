@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.ui;
+package com.calgen.stockhawk.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,7 +13,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.udacity.stockhawk.R;
+import com.calgen.stockhawk.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

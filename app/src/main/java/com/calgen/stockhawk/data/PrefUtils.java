@@ -1,11 +1,11 @@
-package com.udacity.stockhawk.data;
+package com.calgen.stockhawk.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.sync.QuoteSyncJob;
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.sync.QuoteSyncJob;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,7 +38,7 @@ public final class PrefUtils {
 
     }
 
-    public static void editStockPref(Context context, String symbol, Boolean add) {
+    private static int editStockPref(Context context, String symbol, Boolean add) {
         String key = context.getString(R.string.pref_stocks_key);
         Set<String> stocks = getStocks(context);
 
@@ -52,14 +52,15 @@ public final class PrefUtils {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(key, stocks);
         editor.apply();
+        return stocks.size();
     }
 
     public static void addStock(Context context, String symbol) {
         editStockPref(context, symbol, true);
     }
 
-    public static void removeStock(Context context, String symbol) {
-        editStockPref(context, symbol, false);
+    public static int removeStock(Context context, String symbol) {
+        return editStockPref(context, symbol, false);
     }
 
     public static String getDisplayMode(Context context) {

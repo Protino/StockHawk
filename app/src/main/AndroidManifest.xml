@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.udacity.stockhawk">
+          package="com.calgen.stockhawk">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.Manifest.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
-        android:name=".StockHawkApp"
+        android:name="com.calgen.stockhawk.StockHawkApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.calgen.stockhawk.ui.MainActivity"
             android:theme="@style/AppTheme.Main"
             >
             <intent-filter>
@@ -25,36 +25,36 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.DetailActivity"
+            android:name="com.calgen.stockhawk.ui.DetailActivity"
             android:theme="@style/AppTheme.Details"
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity"/>
+                android:value="com.calgen.stockhawk.ui.MainActivity"/>
         </activity>
 
         <service
-            android:name=".sync.QuoteIntentService"
+            android:name="com.calgen.stockhawk.sync.QuoteIntentService"
             android:exported="false"/>
 
         <provider
-            android:name=".data.StockProvider"
-            android:authorities="com.udacity.stockhawk"
+            android:name="com.calgen.stockhawk.data.StockProvider"
+            android:authorities="com.calgen.stockhawk"
             android:exported="false"/>
 
         <service
-            android:name=".sync.QuoteJobService"
+            android:name="com.calgen.stockhawk.sync.QuoteJobService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <!-- Widget receiver and services-->
         <receiver
-            android:name=".widget.StockWidgetProvider"
+            android:name="com.calgen.stockhawk.widget.StockWidgetProvider"
             android:label="@string/widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="com.udacity.stockhawk.ACTION_DATA_UPDATED"/>
+                <action android:name="com.calgen.stockhawk.ACTION_DATA_UPDATED"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -62,7 +62,7 @@
         </receiver>
 
         <service
-            android:name=".widget.StockWidgetService"
+            android:name="com.calgen.stockhawk.widget.StockWidgetService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>
 

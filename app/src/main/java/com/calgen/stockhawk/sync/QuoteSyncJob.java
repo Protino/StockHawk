@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.sync;
+package com.calgen.stockhawk.sync;
 
 import android.annotation.SuppressLint;
 import android.app.job.JobInfo;
@@ -13,10 +13,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
 import android.widget.Toast;
 
-import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.data.Contract;
-import com.udacity.stockhawk.data.PrefUtils;
-import com.udacity.stockhawk.utils.BasicUtils;
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.data.Contract;
+import com.calgen.stockhawk.data.PrefUtils;
+import com.calgen.stockhawk.utils.BasicUtils;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -41,7 +41,7 @@ import static android.os.Looper.getMainLooper;
 
 public final class QuoteSyncJob {
 
-    public static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
+    public static final String ACTION_DATA_UPDATED = "com.calgen.stockhawk.ACTION_DATA_UPDATED";
     public static final int STOCK_STATUS_OK = 0;
     public static final int STOCK_STATUS_SERVER_DOWN = 1;
     public static final int STOCK_STATUS_SERVER_INVALID = 2;

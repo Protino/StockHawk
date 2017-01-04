@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.widget;
+package com.calgen.stockhawk.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,8 +10,8 @@ import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.data.Contract;
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.data.Contract;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

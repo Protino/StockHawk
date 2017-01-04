@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.widget;
+package com.calgen.stockhawk.widget;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -13,10 +13,10 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
-import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.sync.QuoteSyncJob;
-import com.udacity.stockhawk.ui.DetailActivity;
-import com.udacity.stockhawk.ui.MainActivity;
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.sync.QuoteSyncJob;
+import com.calgen.stockhawk.ui.DetailActivity;
+import com.calgen.stockhawk.ui.MainActivity;
 
 /**
  * Created by Gurupad Mamadapur on 1/1/2017.

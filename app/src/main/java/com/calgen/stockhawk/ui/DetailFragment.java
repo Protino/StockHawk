@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.ui;
+package com.calgen.stockhawk.ui;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -23,12 +23,12 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.data.Contract;
-import com.udacity.stockhawk.utils.CustomMarkerView;
-import com.udacity.stockhawk.utils.Parser;
-import com.udacity.stockhawk.utils.XAxisDateFormatter;
-import com.udacity.stockhawk.utils.YAxisPriceFormatter;
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.data.Contract;
+import com.calgen.stockhawk.utils.CustomMarkerView;
+import com.calgen.stockhawk.utils.Parser;
+import com.calgen.stockhawk.utils.XAxisDateFormatter;
+import com.calgen.stockhawk.utils.YAxisPriceFormatter;
 
 import java.util.List;
 

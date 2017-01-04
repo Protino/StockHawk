@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.utils;
+package com.calgen.stockhawk.utils;
 
 import android.support.v4.util.Pair;
 

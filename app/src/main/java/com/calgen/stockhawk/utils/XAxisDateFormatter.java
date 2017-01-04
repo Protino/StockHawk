@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.utils;
+package com.calgen.stockhawk.utils;
 
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
