@@ -57,7 +57,7 @@ public final class QuoteSyncJob {
     @SuppressLint("BinaryOperationInTimber")
     static void getQuotes(Context context) {
 
-        Calendar from = Calendar.getInstance();
+        Calendar from;
         Calendar to = Calendar.getInstance();
         try {
 
@@ -113,6 +113,7 @@ public final class QuoteSyncJob {
                     exchangeName = stock.getStockExchange();
                 } catch (NullPointerException exception) {
                     Timber.e(exception, "Incorrect stock symbol entered : " + symbol);
+
                     showErrorToast(context, symbol);
                     PrefUtils.removeStock(context, symbol);
                     if (PrefUtils.getStocks(context).size() == 0) {
@@ -124,7 +125,8 @@ public final class QuoteSyncJob {
                     continue;
                 }
 
-                from.add(Calendar.MONTH, -5);
+                from = Calendar.getInstance();
+                from.add(Calendar.MONTH, -4);
                 String monthHistory = getHistory(stock, from, to, Interval.MONTHLY);
 
 
@@ -180,7 +182,19 @@ public final class QuoteSyncJob {
 
     private static String getHistory(Stock stock, Calendar from, Calendar to, Interval interval) throws IOException {
 
-        List<HistoricalQuote> history = stock.getHistory(from, to, interval);
+        List<HistoricalQuote> history = new ArrayList<>();
+
+        //At times, query over 5-7 days history returns very less data at times.
+        //hence performing iterative queries until 5 days of data is received.
+
+        if (interval.equals(Interval.DAILY)) {
+            while (history.size() < 5) {
+                history = stock.getHistory(from, to, interval);
+                from.add(Calendar.DAY_OF_YEAR, -1);
+            }
+        } else {
+            history = stock.getHistory(from, to, interval);
+        }
 
         StringBuilder historyBuilder = new StringBuilder();
         for (HistoricalQuote it : history) {

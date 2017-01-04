@@ -2,12 +2,12 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/content_main"
     android:gravity="center"
-    android:visibility="gone"
     android:orientation="vertical"
+    android:visibility="gone"
     tools:context="com.calgen.stockhawk.ui.MainActivity">
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -20,7 +20,6 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView

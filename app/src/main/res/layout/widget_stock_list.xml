@@ -9,7 +9,7 @@
     <FrameLayout
         android:id="@+id/widget"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/abc_action_bar_default_height_material"
+        android:layout_height="?android:attr/actionBarSize"
         android:background="@color/colorPrimary"
         android:paddingEnd="@dimen/activity_vertical_margin"
         android:paddingStart="@dimen/activity_vertical_margin">

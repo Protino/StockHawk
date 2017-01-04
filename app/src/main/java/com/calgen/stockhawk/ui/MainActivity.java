@@ -1,12 +1,18 @@
 package com.calgen.stockhawk.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
@@ -43,15 +49,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final int STOCK_LOADER = 1;
     //@formatter:off
-    @BindView(R.id.recycler_view) RecyclerView recyclerView;
-    @BindView(R.id.fab) FloatingActionButton fab;
-    @BindView(R.id.swipe_refresh) SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.error) TextView error;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.progressBarLayout) LinearLayout progressBarLayout;
-    @BindView(R.id.content_main) LinearLayout contentLayout;
+    @BindView(R.id.recycler_view) public RecyclerView recyclerView;
+    @BindView(R.id.fab) public FloatingActionButton fab;
+    @BindView(R.id.swipe_refresh) public SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.error) public TextView error;
+    @BindView(R.id.toolbar) public Toolbar toolbar;
+    @BindView(R.id.progressBarLayout) public LinearLayout progressBarLayout;
+    @BindView(R.id.content_main) public LinearLayout contentLayout;
+    @BindView(R.id.activity_main) public CoordinatorLayout activityMainLayout;
     //@formatter:on
     private StockAdapter adapter;
+    private Snackbar snackbar;
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!BasicUtils.isNetworkUp(context)) {
+                showInternetOffSnackBar();
+            } else {
+                if (snackbar != null) snackbar.dismiss();
+                hideLoadingLayout(false);
+                updateEmptyView();
+            }
+        }
+    };
 
     //Lifecycle start
     @Override
@@ -79,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onResume() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
+        registerReceiver(broadcastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         super.onResume();
     }
 
@@ -88,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getMenuInflater().inflate(R.menu.main_activity_settings, menu);
         MenuItem item = menu.findItem(R.id.action_change_units);
         setDisplayModeMenuItemIcon(item);
+        unregisterReceiver(broadcastReceiver);
         return true;
     }
 
@@ -128,6 +150,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             PrefUtils.toggleDisplayMode(this);
             setDisplayModeMenuItemIcon(item);
             adapter.notifyDataSetChanged();
+            BasicUtils.announceForAccessibilityCompact(
+                    this,
+                    getWindow().getDecorView()
+                            .findViewById(R.id.action_change_units),
+                    getClass().getName(),
+                    String.format(getString(R.string.display_mode_change_cd), PrefUtils.getDisplayMode(this)));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -148,7 +176,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onRefresh() {
-        QuoteSyncJob.syncImmediately(this);
+        if (BasicUtils.isNetworkUp(this)) {
+            QuoteSyncJob.syncImmediately(this);
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+            showInternetOffSnackBar();
+        }
+    }
+
+    private void showInternetOffSnackBar() {
+        snackbar = Snackbar.make(activityMainLayout,
+                getString(R.string.error_no_network),
+                Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(getString(R.string.try_again), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onRefresh();
+                if (!BasicUtils.isNetworkUp(getApplicationContext())) {
+                    showInternetOffSnackBar();
+                }
+            }
+        });
+        snackbar.setActionTextColor(getResources().getColor(R.color.error));
+        snackbar.show();
     }
 
     @Override
@@ -173,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void updateEmptyView() {
         swipeRefreshLayout.setVisibility(View.GONE);
         hideLoadingLayout(false);
-        int message;
+        int message = R.string.error_no_stocks;
 
         if (adapter.getItemCount() == 0) {
             @QuoteSyncJob.StockStatus int status = PrefUtils.getStockStatus(this);
@@ -193,16 +243,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 default:
                     message = R.string.loading_data;
                     break;
+                case QuoteSyncJob.STOCK_STATUS_INVALID:
+                    break;
+                case QuoteSyncJob.STOCK_STATUS_OK:
+                    break;
             }
             if (!BasicUtils.isNetworkUp(this)) message = R.string.error_no_network;
-            if(PrefUtils.getStocks(this).size()==0) message = R.string.error_no_stocks;
+            if (PrefUtils.getStocks(this).size() == 0) message = R.string.error_no_stocks;
             error.setText(message);
             error.setVisibility(View.VISIBLE);
         } else if (!BasicUtils.isNetworkUp(this)) {
             Toast.makeText(this, R.string.toast_no_connectivity, Toast.LENGTH_LONG).show();
-            swipeRefreshLayout.setVisibility(View.VISIBLE);
         } else {
-            error.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
         }

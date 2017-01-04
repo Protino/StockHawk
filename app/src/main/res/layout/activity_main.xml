@@ -1,6 +1,7 @@
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -42,10 +43,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        android:contentDescription="@string/add_new_stock_cd"
         android:onClick="button"
         android:src="@drawable/fab_plus"
         app:borderWidth="0dp"
         app:elevation="6dp"
         app:fabSize="normal"
         app:pressedTranslationZ="12dp"/>
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -61,7 +61,7 @@
         />
 
     <android.support.v4.widget.Space
-        android:layout_height="@dimen/abc_list_item_padding_horizontal_material"
+        android:layout_height="@dimen/base_padding"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"/>
 

@@ -21,8 +21,7 @@ import butterknife.ButterKnife;
 
 public class AddStockDialog extends DialogFragment {
 
-    @BindView(R.id.dialog_stock)
-    EditText stock;
+    @BindView(R.id.dialog_stock) public EditText stock;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

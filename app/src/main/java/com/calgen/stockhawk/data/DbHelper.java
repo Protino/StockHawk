@@ -10,7 +10,7 @@ import com.calgen.stockhawk.data.Contract.Quote;
 public class DbHelper extends SQLiteOpenHelper {
 
 
-    static final String NAME = "StockHawk.db";
+    private static final String NAME = "StockHawk.db";
     private static final int VERSION = 3;
 
 

@@ -14,6 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.calgen.stockhawk.R;
+import com.calgen.stockhawk.data.Contract;
+import com.calgen.stockhawk.utils.CustomMarkerView;
+import com.calgen.stockhawk.utils.Parser;
+import com.calgen.stockhawk.utils.XAxisDateFormatter;
+import com.calgen.stockhawk.utils.YAxisPriceFormatter;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -23,12 +29,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.calgen.stockhawk.R;
-import com.calgen.stockhawk.data.Contract;
-import com.calgen.stockhawk.utils.CustomMarkerView;
-import com.calgen.stockhawk.utils.Parser;
-import com.calgen.stockhawk.utils.XAxisDateFormatter;
-import com.calgen.stockhawk.utils.YAxisPriceFormatter;
 
 import java.util.List;
 
@@ -44,16 +44,17 @@ import icepick.State;
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     //@formatter:off
     @State public String fragmentDataType;
     @State public String dateFormat;
     @State public int dataColumnPosition;
     @State public Uri stockUri;
+    @State public Boolean isChartDescriptionAnnounced=false;
     @State public String historyData;
     @State public int LOADER_ID;
-    @BindView(R.id.chart) LineChart linechart;
-    @BindColor(R.color.white) int white;
+    @State public String fragmentTitle;
+    @BindView(R.id.chart) public LineChart linechart;
+    @BindColor(R.color.white) public int white;
     //@formatter:on
     private Context context;
 
@@ -199,6 +200,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         linechart.setDescription(description);
         linechart.setExtraOffsets(10, 0, 0, 10);
         linechart.animateX(1500, Easing.EasingOption.Linear);
+        // TODO: 1/7/2017 Raise issue on MPAndroidChart to add accessibility for chart elements
     }
 
     @Override

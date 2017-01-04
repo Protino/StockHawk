@@ -31,7 +31,7 @@
 
     <android.support.v4.widget.Space
         android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:layout_marginBottom="@dimen/base_padding"
         app:layout_columnSpan="3"
         app:layout_columnWeight="1"/>
 
@@ -57,7 +57,7 @@
 
     <android.support.v4.widget.Space
         android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:layout_marginBottom="@dimen/base_padding"
         app:layout_columnSpan="3"
         app:layout_columnWeight="1"/>
 
@@ -74,14 +74,15 @@
     <TextView
         android:id="@+id/absolute_change"
         style="@style/Base.TextAppearance.AppCompat.Body2"
-        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:layout_marginBottom="@dimen/base_padding"
         android:layout_marginTop="-3dp"
         android:elevation="4dp"
-        android:padding="3dp"
         android:fontFamily="sans-serif-light"
+        android:padding="3dp"
         android:textColor="@color/white"
         android:transitionName="@string/stock_change_transition_name"
         tools:text="+ $0.14"/>
+
     <TextView
         android:layout_width="0dp"
         android:text=""

@@ -36,25 +36,21 @@ import icepick.State;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final int PAGE_LIMIT = 2;
     private static int LOADER_ID = 0;
-    private static Cursor oldCursor;
-    @State(CustomBundler.class)
-    public Map<Integer, String> fragmentTags = new HashMap<>();
     //@formatter:off
+    @State(CustomBundler.class) public Map<Integer, String> fragmentTags = new HashMap<>();
     @State Boolean dataLoaded = false;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.stock_name) TextView tvStockName;
-    @BindView(R.id.stock_exchange) TextView tvStockExchange;
-    @BindView(R.id.stock_price) TextView tvStockPrice;
-    @BindView(R.id.day_highest) TextView tvDayHighest;
-    @BindView(R.id.day_lowest)TextView tvDayLowest;
-    @BindView(R.id.absolute_change) TextView tvAbsoluteChange;
-    @BindView(R.id.viewpager) ViewPager viewPager;
-    @BindView(R.id.tabs) TabLayout tabLayout;
+    @BindView(R.id.toolbar) public Toolbar toolbar;
+    @BindView(R.id.stock_name) public TextView tvStockName;
+    @BindView(R.id.stock_exchange) public TextView tvStockExchange;
+    @BindView(R.id.stock_price) public TextView tvStockPrice;
+    @BindView(R.id.day_highest) public TextView tvDayHighest;
+    @BindView(R.id.day_lowest) public TextView tvDayLowest;
+    @BindView(R.id.absolute_change) public TextView tvAbsoluteChange;
+    @BindView(R.id.viewpager) public ViewPager viewPager;
+    @BindView(R.id.tabs) public TabLayout tabLayout;
     private Uri stockUri;
-    private ViewPagerAdapter viewPagerAdapter;
     //@formatter:on
 
     //Lifecycle start
@@ -72,10 +68,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         stockUri = getIntent().getData();
         setupViewPager();
         tabLayout.setupWithViewPager(viewPager, true);
-
-        //Initialize loader
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-
     }
 
     @Override
@@ -95,7 +88,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     private void setupViewPager() {
 
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         Bundle bundle = new Bundle();
         DetailFragment monthlyStock = new DetailFragment();
         bundle.putString(getString(R.string.FRAGMENT_DATA_TYPE_KEY), getString(R.string.MONTHLY));
@@ -111,9 +104,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         bundle.putString(getString(R.string.FRAGMENT_DATA_TYPE_KEY), getString(R.string.DAILY));
         dailyStock.setArguments(bundle);
 
-        viewPagerAdapter.addFragment(dailyStock, "5 DAYS");
-        viewPagerAdapter.addFragment(weeklyStock, "5 WEEKS");
-        viewPagerAdapter.addFragment(monthlyStock, "5 MONTHS");
+        viewPagerAdapter.addFragment(dailyStock, getString(R.string.days_fragment_title));
+        viewPagerAdapter.addFragment(weeklyStock, getString(R.string.weeks_fragment_title));
+        viewPagerAdapter.addFragment(monthlyStock, getString(R.string.months_fragment_title));
 
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setOffscreenPageLimit(PAGE_LIMIT);
@@ -144,6 +137,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             Float dayLowest = data.getFloat(Contract.Quote.POSITION_LOWEST);
             Float dayHighest = data.getFloat(Contract.Quote.POSITION_HIGHEST);
 
+            getWindow().getDecorView().setContentDescription(
+                    String.format(getString(R.string.detail_activity_cd), stockName));
+
             DecimalFormat dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
             dollarFormat.setMaximumFractionDigits(2);
             dollarFormat.setMinimumFractionDigits(2);
@@ -155,21 +151,26 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             tvStockExchange.setText(stockExchange);
             tvStockName.setText(stockName);
             tvStockPrice.setText(dollarFormat.format(stockPrice));
+            tvStockPrice.setContentDescription(String.format(getString(R.string.stock_price_cd), tvStockPrice.getText()));
             tvAbsoluteChange.setText(dollarFormatWithPlus.format(absolutionChange));
             if (dayHighest != -1) {
                 tvDayHighest.setText(dollarFormat.format(dayHighest));
+                tvDayHighest.setContentDescription(String.format(getString(R.string.day_highest_cd), tvDayHighest.getText()));
                 tvDayLowest.setText(dollarFormat.format(dayLowest));
+                tvDayLowest.setContentDescription(String.format(getString(R.string.day_lowest_cd), tvDayLowest.getText()));
             } else {
                 tvDayLowest.setVisibility(View.GONE);
                 tvDayHighest.setVisibility(View.GONE);
             }
-
             if (absolutionChange > 0) {
                 tvAbsoluteChange.setBackgroundResource(R.drawable.percent_change_pill_green);
+                tvAbsoluteChange.setContentDescription(
+                        String.format(getString(R.string.stock_increment_cd), tvAbsoluteChange.getText()));
             } else {
                 tvAbsoluteChange.setBackgroundResource(R.drawable.percent_change_pill_red);
+                tvAbsoluteChange.setContentDescription(
+                        String.format(getString(R.string.stock_decrement_cd), tvAbsoluteChange.getText()));
             }
-
         }
     }
 
@@ -205,13 +206,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         public void addFragment(Fragment fragment, String title) {
             fragmentList.add(fragment);
             fragmentTitleList.add(title);
-        }
-
-        public Fragment getFragment(int position) {
-            String tag = fragmentTags.get(position);
-            if (tag == null)
-                return null;
-            return getSupportFragmentManager().findFragmentByTag(tag);
         }
     }
 }

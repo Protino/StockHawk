@@ -3,10 +3,10 @@ package com.calgen.stockhawk.utils;
 import android.content.Context;
 import android.widget.TextView;
 
+import com.calgen.stockhawk.R;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.calgen.stockhawk.R;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -30,9 +30,9 @@ public class CustomMarkerView extends MarkerView {
     /**
      * Constructor. Sets up the MarkerView with a custom layout resource.
      *
-     * @param context this is need to fetch string resources.
+     * @param context        this is need to fetch string resources.
      * @param layoutResource the layout resource to use for the MarkerView.
-     * @param referenceTime value relative to each data value. This is needed to normalize the values back.
+     * @param referenceTime  value relative to each data value. This is needed to normalize the values back.
      */
     public CustomMarkerView(Context context, int layoutResource, Entry finalEntry, Float referenceTime) {
         super(context, layoutResource);
@@ -47,7 +47,6 @@ public class CustomMarkerView extends MarkerView {
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
         super.refreshContent(e, highlight);
-        // TODO: 11/28/2016 Add changes to currency change
         Float stockValue = e.getY();
         date.setTime((long) (e.getX() + referenceTime));
         String formattedDate = dateFormat.format(date);

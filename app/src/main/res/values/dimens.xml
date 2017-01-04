@@ -1,6 +1,7 @@
 <resources>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="base_padding">16dp</dimen>
     <dimen name="appbar_elevation">4dp</dimen>
     <dimen name="widget_min_width">216dp</dimen>
     <dimen name="widget_min_height">180dp</dimen>

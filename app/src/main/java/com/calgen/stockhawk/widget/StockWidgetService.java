@@ -1,7 +1,6 @@
 package com.calgen.stockhawk.widget;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -24,18 +23,12 @@ import java.util.Locale;
 public class StockWidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new ListRemoteViewFactory(getApplicationContext());
+        return new ListRemoteViewFactory();
     }
 
     public class ListRemoteViewFactory implements RemoteViewsService.RemoteViewsFactory {
 
-        private final String LOG_TAG = ListRemoteViewFactory.class.getSimpleName();
-        private final Context context;
         private Cursor data = null;
-
-        public ListRemoteViewFactory(Context applicationContext) {
-            context = applicationContext;
-        }
 
         //Lifecycle start
         @Override
@@ -105,7 +98,7 @@ public class StockWidgetService extends RemoteViewsService {
             remoteViews.setTextViewText(R.id.price, dollarFormat.format(stockPrice));
             remoteViews.setTextViewText(R.id.change, dollarFormatWithPlus.format(absoluteChange));
             remoteViews.setInt(R.id.change, "setBackgroundResource", backgroundDrawable);
-            remoteViews.setInt(R.id.list_item_quote, "setBackgroundResource",R.color.material_grey_850);
+            remoteViews.setInt(R.id.list_item_quote, "setBackgroundResource", R.color.material_grey_850);
 
             final Intent fillInIntent = new Intent();
             Uri stockUri = Contract.Quote.makeUriForStock(stockSymbol);

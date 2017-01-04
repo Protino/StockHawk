@@ -12,14 +12,13 @@ import android.support.annotation.Nullable;
 
 public class StockProvider extends ContentProvider {
 
-    static final int QUOTE = 100;
-    static final int QUOTE_FOR_SYMBOL = 101;
-
-    static UriMatcher uriMatcher = buildUriMatcher();
+    private static final int QUOTE = 100;
+    private static final int QUOTE_FOR_SYMBOL = 101;
+    private static final UriMatcher uriMatcher = buildUriMatcher();
 
     private DbHelper dbHelper;
 
-    static UriMatcher buildUriMatcher() {
+    private static UriMatcher buildUriMatcher() {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         matcher.addURI(Contract.AUTHORITY, Contract.PATH_QUOTE, QUOTE);
         matcher.addURI(Contract.AUTHORITY, Contract.PATH_QUOTE_WITH_SYMBOL, QUOTE_FOR_SYMBOL);
@@ -27,11 +26,13 @@ public class StockProvider extends ContentProvider {
     }
 
 
+    //Lifecycle start
     @Override
     public boolean onCreate() {
         dbHelper = new DbHelper(getContext());
         return true;
     }
+//Lifecycle end
 
     @Nullable
     @Override

@@ -7,11 +7,9 @@ import android.provider.BaseColumns;
 public class Contract {
 
     public static final String AUTHORITY = "com.calgen.stockhawk";
-
-    public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
-
     public static final String PATH_QUOTE = "quote";
     public static final String PATH_QUOTE_WITH_SYMBOL = "quote/*";
+    private static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
 
     public static final class Quote implements BaseColumns {
 

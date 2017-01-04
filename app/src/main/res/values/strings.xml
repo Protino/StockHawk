@@ -8,8 +8,6 @@
     <string name="pref_display_mode_absolute_key" translatable="false">ABSOLUTE</string>
     <string name="pref_display_mode_percentage_key" translatable="false">PERCENTAGE</string>
     <string name="pref_display_mode_key" translatable="false">DISPLAY_MODE</string>
-    <string name="action_change_units" translatable="false">@string/pref_display_mode_key</string>
-    <string name="pref_display_mode_title">Display Mode</string>
     <string name="pref_display_mode_default" translatable="false">@string/pref_display_mode_percentage_key</string>
     <string name="pref_stock_status_key" translatable="false">STOCK_STATUS</string>
 
@@ -18,8 +16,6 @@
     <string name="MONTHLY" translatable="false">MONTHLY</string>
     <string name="DAILY" translatable="false">DAILY</string>
     <string name="WEEKLY" translatable="false">WEEKLY</string>
-    <string name="FRAGMENT_DATA_KEY" translatable="false">FRAGMENT_DATA_KEY</string>
-    <string name="chart_no_data">No data</string>
 
     <!--Default stock names-->
     <string name="default_stocks_yahoo" translatable="false">YHOO</string>
@@ -34,8 +30,8 @@
     <string name="dialog_add">Add</string>
 
     <!-- Error related strings-->
-    <string name="toast_stock_invalid">Symbol %s is invalid!</string>
-    <string name="error_no_network">No network connectivity! Will load information when the network is available.</string>
+    <string name="toast_stock_invalid">Symbol %s is invalid!</string>"
+    <string name="error_no_network">No Internet connection.</string>
     <string name="error_no_stocks">No stocks added! Hit the plus button below to add one.</string>
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when the network is available.</string>
     <string name="toast_no_connectivity">Will refresh when the network is available.</string>
@@ -44,13 +40,27 @@
     <string name="error_server_invalid">No stock information available. The server is not returning valid data. Please check for an updated version of Stock Hawk.</string>
 
 
-    <!-- Graph related string-->
+    <!-- Graph related strings-->
     <string name="marker_text">%s<i> on</i> <xliff:g example="5 Jul 2017" id="date">%s</xliff:g></string><!--Ex: - $567 on 5 Jul 2017-->
     <string name="widget_label">Stock Details</string>
     <string name="loading_data">Loading data. Please wait…</string>
 
     <!--Shared element transitions-->
     <string name="stock_price_transition_name" translatable="false">TN_STOCK_PRICE</string>
-    <string name="stock_change_transition_name">TN_STOCK_CHANGE</string>
+    <string name="stock_change_transition_name" translatable="false">TN_STOCK_CHANGE</string>
 
+    <!-- Content description to provide accessibility-->
+    <string name="add_new_stock_cd">Add new stock</string>
+    <string name="detail_activity_cd">"Stock details of %s"</string>
+    <string name="day_lowest_cd">"Today's lowest stock value %s"</string>
+    <string name="day_highest_cd">Today's highest stock value %s</string>
+    <string name="stock_price_cd">Stock price %s</string>
+    <string name="display_mode_cd">Toggle display mode between absolute and percentage values</string>
+    <string name="display_mode_change_cd">"Display mode changed to %s"</string>
+    <string name="stock_increment_cd">"Stock value increased by %s"</string>
+    <string name="stock_decrement_cd">"Stock value decreased by %s"</string>
+    <string name="days_fragment_title">5 DAYS</string>
+    <string name="weeks_fragment_title">5 WEEKS</string>
+    <string name="months_fragment_title">5 MONTHS</string>
+    <string name="try_again">Try again</string>
 </resources>
