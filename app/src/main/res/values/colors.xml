@@ -7,17 +7,16 @@
     <color name="colorAccent">#00BCD4</color>
     <color name="accent_pressed">#FF00BCD4</color>
     <color name="accent_ripple">#4200BCD4</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#727272</color>
+    <color name="primary_text">@color/white</color>
+    <color name="secondary_text">#C0C0C0</color>
     <color name="error">#F34235</color>
     <color name="divider">#B6B6B6</color>
-    
-    <color name="material_green">#388E3C</color>
 
     <color name="darkest_grey">#2B2B2B</color>
     <color name="dark_grey">#3C3F41</color>
     <color name="dark_grey_with_opacity">#DE3C3F41</color>
     <color name="white">#FFFFFF</color>
     <color name="material_red">#D32F2F</color>
+    <color name="material_green">#388E3C</color>
 
 </resources>

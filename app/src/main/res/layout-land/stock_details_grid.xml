@@ -16,11 +16,12 @@
 
     <TextView
         android:id="@+id/stock_name"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
+        android:ellipsize="end"
         android:gravity="center_horizontal"
         android:maxLength="21"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:textColor="@color/white"
-        android:textSize="24sp"
         app:layout_columnSpan="2"
         app:layout_gravity="fill_horizontal"
         tools:text="Facebook Inc."
@@ -28,12 +29,11 @@
 
     <TextView
         android:id="@+id/stock_exchange"
+        style="@style/Base.TextAppearance.AppCompat.Subhead"
         android:gravity="center_horizontal"
         android:maxLength="21"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:textColor="@color/white"
-        android:textSize="16sp"
-        android:textStyle="normal"
         app:layout_columnSpan="2"
         app:layout_gravity="fill_horizontal"
         tools:text="NASDAQ"
@@ -45,7 +45,6 @@
         android:gravity="center_horizontal"
         android:textColor="@color/white"
         android:textSize="24sp"
-        android:textStyle="normal"
         android:transitionName="@string/stock_price_transition_name"
         app:layout_columnWeight="1"
         app:layout_gravity="fill_horizontal"
@@ -53,10 +52,9 @@
 
     <TextView
         android:id="@+id/day_highest"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
         android:gravity="center_horizontal"
         android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="normal"
         app:layout_columnWeight="1"
         app:layout_gravity="center_horizontal"
         tools:text="$180"
@@ -69,23 +67,24 @@
 
     <TextView
         android:id="@+id/absolute_change"
+        style="@style/Base.TextAppearance.AppCompat.Body2"
         android:elevation="4dp"
+        android:fontFamily="sans-serif-light"
         android:gravity="center_horizontal"
         android:padding="3dp"
         android:textColor="@color/white"
-        android:textSize="16sp"
         android:transitionName="@string/stock_change_transition_name"
         app:layout_gravity="center_horizontal"
         tools:text="+ $0.14"/>
 
     <TextView
         android:id="@+id/day_lowest"
+        style="@style/Base.TextAppearance.AppCompat.Body2"
         android:gravity="center_horizontal"
         android:textColor="@color/white"
-        android:textSize="16sp"
         android:textStyle="normal"
         app:layout_gravity="center_horizontal"
-        tools:text="$94"/>
+        tools:text="$150"/>
 
     <android.support.v4.widget.Space
         app:layout_columnSpan="2"

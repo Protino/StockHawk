@@ -1,11 +1,8 @@
 package com.udacity.stockhawk.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,6 +31,7 @@ import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
+import com.udacity.stockhawk.utils.BasicUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,16 +68,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setRefreshing(true);
-
-        onRefresh();
-        QuoteSyncJob.initialize(this);
+        if (savedInstanceState == null)
+            QuoteSyncJob.initialize(this);
         setUpDeletionOnSlide();
         getSupportActionBar().setTitle(R.string.app_name);
+        getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
     }
 
     @Override
     protected void onResume() {
-        getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
         super.onResume();
@@ -141,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Pair<View, String> priceViewPair = Pair.create((View) viewHolder.price, getString(R.string.stock_price_transition_name));
         Pair<View, String> changeViewPair = Pair.create((View) viewHolder.change, getString(R.string.stock_change_transition_name));
         ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this, priceViewPair,changeViewPair);
+                this, priceViewPair, changeViewPair);
 
         ActivityCompat.startActivity(this, intent, optionsCompat.toBundle());
     }
@@ -194,10 +191,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     message = R.string.loading_data;
                     break;
             }
-            if (!networkUp()) message = R.string.error_no_network;
+            if (!BasicUtils.isNetworkUp(this)) message = R.string.error_no_network;
             if (PrefUtils.getStocks(this).size() == 0) message = R.string.error_no_stocks;
             error.setText(message);
-        } else if (!networkUp()) {
+        } else if (!BasicUtils.isNetworkUp(this)) {
             Toast.makeText(this, R.string.toast_no_connectivity, Toast.LENGTH_LONG).show();
             swipeRefreshLayout.setVisibility(View.VISIBLE);
         } else {
@@ -218,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     void addStock(String symbol) {
         if (symbol != null && !symbol.isEmpty()) {
 
-            if (networkUp()) {
+            if (BasicUtils.isNetworkUp(this)) {
                 swipeRefreshLayout.setRefreshing(true);
             } else {
                 String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
@@ -228,13 +225,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             PrefUtils.addStock(this, symbol);
             QuoteSyncJob.syncImmediately(this);
         }
-    }
-
-    private boolean networkUp() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
     public void button(View view) {

@@ -8,8 +8,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
@@ -18,10 +16,12 @@ import android.widget.Toast;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.utils.BasicUtils;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -48,8 +48,8 @@ public final class QuoteSyncJob {
     public static final int STOCK_STATUS_UNKNOWN = 3;
     public static final int STOCK_STATUS_INVALID = 4;
     public static final int STOCK_STATUS_EMPTY = 5;
-    static final int ONE_OFF_ID = 2;
-    private static final int PERIOD = 300000;
+    private static final int ONE_OFF_ID = 2;
+    private static final int PERIOD = 3600000;
     private static final int INITIAL_BACKOFF = 10000;
     private static final int PERIODIC_ID = 1;
     private static boolean invalidFlag = false;
@@ -96,9 +96,16 @@ public final class QuoteSyncJob {
                     quote = stock.getQuote();
                     price = quote.getPrice().floatValue();
 
-
-                    dayLowest = quote.getDayLow().floatValue();
-                    dayHighest = quote.getDayHigh().floatValue();
+                    BigDecimal temp = quote.getDayLow();
+                    //This is done because lowest or highest of the day is unknown
+                    //and quote.getDayLow() returns null.
+                    if (temp == null) {
+                        dayLowest = -1;
+                        dayHighest = -1;
+                    } else {
+                        dayLowest = temp.floatValue();
+                        dayHighest = quote.getDayHigh().floatValue();
+                    }
 
                     change = quote.getChange().floatValue();
                     percentChange = quote.getChangeInPercent().floatValue();
@@ -126,7 +133,7 @@ public final class QuoteSyncJob {
                 String weekHistory = getHistory(stock, from, to, Interval.WEEKLY);
 
                 from = Calendar.getInstance();
-                from.add(Calendar.DAY_OF_YEAR, -8);
+                from.add(Calendar.DAY_OF_YEAR, -5);
                 String dayHistory = getHistory(stock, from, to, Interval.DAILY);
 
                 ContentValues quoteCV = new ContentValues();
@@ -162,8 +169,8 @@ public final class QuoteSyncJob {
     }
 
     private static void showErrorToast(final Context context, final String symbol) {
-        Handler mHandler = new Handler(getMainLooper());
-        mHandler.post(new Runnable() {
+        Handler handler = new Handler(getMainLooper());
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(context, String.format(context.getString(R.string.toast_stock_invalid), symbol), Toast.LENGTH_LONG).show();
@@ -203,10 +210,7 @@ public final class QuoteSyncJob {
 
     synchronized public static void syncImmediately(Context context) {
 
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+        if (BasicUtils.isNetworkUp(context)) {
             Intent nowIntent = new Intent(context, QuoteIntentService.class);
             context.startService(nowIntent);
         } else {

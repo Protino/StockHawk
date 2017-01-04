@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.udacity.stockhawk.R;
@@ -79,7 +80,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
@@ -155,8 +156,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             tvStockName.setText(stockName);
             tvStockPrice.setText(dollarFormat.format(stockPrice));
             tvAbsoluteChange.setText(dollarFormatWithPlus.format(absolutionChange));
-            tvDayHighest.setText(dollarFormat.format(dayHighest));
-            tvDayLowest.setText(dollarFormat.format(dayLowest));
+            if (dayHighest != -1) {
+                tvDayHighest.setText(dollarFormat.format(dayHighest));
+                tvDayLowest.setText(dollarFormat.format(dayLowest));
+            } else {
+                tvDayLowest.setVisibility(View.GONE);
+                tvDayHighest.setVisibility(View.GONE);
+            }
 
             if (absolutionChange > 0) {
                 tvAbsoluteChange.setBackgroundResource(R.drawable.percent_change_pill_green);

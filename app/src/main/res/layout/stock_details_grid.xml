@@ -10,10 +10,10 @@
 
     <TextView
         android:id="@+id/stock_name"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
         android:ellipsize="end"
         android:maxLength="21"
         android:textColor="@color/white"
-        android:textSize="24sp"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"
         tools:text="Microsoft Corporation"
@@ -21,8 +21,8 @@
 
     <TextView
         android:id="@+id/day_highest"
+        style="@style/Base.TextAppearance.AppCompat.Headline"
         android:textColor="@color/white"
-        android:textSize="24sp"
         android:textStyle="normal"
         app:layout_columnWeight="1"
         app:layout_gravity="right"
@@ -37,8 +37,8 @@
 
     <TextView
         android:id="@+id/stock_exchange"
+        style="@style/Base.TextAppearance.AppCompat.Subhead"
         android:textColor="@color/white"
-        android:textSize="16sp"
         android:textStyle="normal"
         app:layout_columnSpan="2"
         app:layout_columnWeight="1"
@@ -47,9 +47,9 @@
 
     <TextView
         android:id="@+id/day_lowest"
+        style="@style/Base.TextAppearance.AppCompat.Subhead"
         android:gravity="center_horizontal"
         android:textColor="@color/white"
-        android:textSize="16sp"
         android:textStyle="normal"
         app:layout_columnWeight="1"
         app:layout_gravity="right"
@@ -63,25 +63,25 @@
 
     <TextView
         android:id="@+id/stock_price"
+        style="@style/Base.TextAppearance.AppCompat.Title"
         android:paddingEnd="8dp"
         android:paddingStart="0dp"
         android:textColor="@color/white"
-        android:textSize="24sp"
         android:textStyle="normal"
         android:transitionName="@string/stock_price_transition_name"
         tools:text="$914.15"/>
 
     <TextView
         android:id="@+id/absolute_change"
+        style="@style/Base.TextAppearance.AppCompat.Body2"
         android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
         android:layout_marginTop="-3dp"
         android:elevation="4dp"
-        android:transitionName="@string/stock_change_transition_name"
         android:padding="3dp"
+        android:fontFamily="sans-serif-light"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:transitionName="@string/stock_change_transition_name"
         tools:text="+ $0.14"/>
-
     <TextView
         android:layout_width="0dp"
         android:text=""

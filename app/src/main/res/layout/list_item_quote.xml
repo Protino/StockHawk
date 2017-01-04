@@ -13,9 +13,11 @@
 
     <TextView
         android:id="@+id/symbol"
+        style="@style/Base.TextAppearance.AppCompat.Subhead"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
+        android:textColor="@color/white"
         tools:text="GOOG"/>
 
     <LinearLayout
@@ -26,20 +28,23 @@
 
         <TextView
             android:id="@+id/price"
-            android:transitionName="@string/stock_price_transition_name"
+            style="@style/Base.TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10sp"
+            android:transitionName="@string/stock_price_transition_name"
             tools:text="1000.00"/>
 
         <TextView
             android:id="@+id/change"
-            android:transitionName="@string/stock_change_transition_name"
+            style="@style/Base.TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/percent_change_pill_green"
             android:elevation="4dp"
+            android:fontFamily="sans-serif-light"
             android:padding="3dp"
+            android:transitionName="@string/stock_change_transition_name"
             tools:text="0.1%"/>
     </LinearLayout>
 </LinearLayout>
