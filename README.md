@@ -1,0 +1,2 @@
+# StockHawk
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/59242a4e7d224e178caf013098ffe5ce)](https://www.codacy.com/app/gurupadmamadapur/StockHawk?utm_source=github.com&utm_medium=referral&utm_content=Protino/StockHawk&utm_campaign=badger)
