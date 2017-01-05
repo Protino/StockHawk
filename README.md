@@ -40,7 +40,7 @@ What Will I Learn?
 
 ### Screenshots
 
-![Cover](/cover.png?raw=true)
+![Cover](/assets/cover.png?raw=true)
 
 ### What did I learn?
 
