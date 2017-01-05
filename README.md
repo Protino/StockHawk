@@ -14,11 +14,18 @@ app.
 
 ```
 Project Overview:
- You will productionize an app, taking it from a functional state to a production-ready state. This will involve finding and handling error cases, adding accessibility features, allowing for localization, adding a widget, and adding a library.
+ You will productionize an app, taking it from a functional state to a
+ production-ready state. This will involve finding and handling error
+ cases, adding accessibility features, allowing for localization,
+ adding a widget, and adding a library.
 
 Why this Project?
- Stock Hawk gives you an opportunity to diagnose problems and practice improving apps. These skills are vital to building apps users will love.
- Diagnosing issues with existing apps is key to working on large apps or continuing projects in Android. Being aware of the common pitfalls in app design frees a developer to produce novel app experiences without making the same mistakes over and over.
+ Stock Hawk gives you an opportunity to diagnose problems and practice
+ improving apps. These skills are vital to building apps users will
+ love. Diagnosing issues with existing apps is key to working on large
+ apps or continuing projects in Android. Being aware of the common
+ pitfalls in app design frees a developer to produce novel app
+ experiences without making the same mistakes over and over.
 
 What Will I Learn?
  In this project, you will:
@@ -49,8 +56,8 @@ Coming soon!
 * Implement search functionality to search for valid stock symbols.
 * Recode the whole `QuoteSyncJob`, by using `Retrofit` and `SyncAdapters`.
 * Try some `ORM` (Maybe GreenDAO), instead of `SQLITE`.
-* Fetch data from multiple sources (not just TMDB).
-* Try fetching currency exchange data and add currency setting option.
+* Try fetching currency exchange rates and add it has an option or even
+  better get the location and set it automatically.
 
 
   [Udacity Android Developer Nanodegree]:https://www.udacity.com/degrees/android-developer-nanodegree-by-google--nd801

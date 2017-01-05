@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getMenuInflater().inflate(R.menu.main_activity_settings, menu);
         MenuItem item = menu.findItem(R.id.action_change_units);
         setDisplayModeMenuItemIcon(item);
-        unregisterReceiver(broadcastReceiver);
         return true;
     }
 
@@ -117,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onDestroy() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.unregisterOnSharedPreferenceChangeListener(this);
+        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 //Lifecycle end
@@ -272,10 +272,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (symbol != null && !symbol.isEmpty()) {
 
             if (BasicUtils.isNetworkUp(this)) {
-                swipeRefreshLayout.setRefreshing(true);
+                hideLoadingLayout(false);
             } else {
                 String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                showInternetOffSnackBar();
             }
             PrefUtils.addStock(this, symbol);
             QuoteSyncJob.syncImmediately(this);
