@@ -40,7 +40,7 @@ What Will I Learn?
 
 ### Screenshots
 
-Coming soon!
+![Cover](/cover.png)
 
 ### What did I learn?
 
