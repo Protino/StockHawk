@@ -48,8 +48,9 @@ public class StockWidgetProvider extends AppWidgetProvider {
 
             remoteViews.setPendingIntentTemplate(R.id.widget_list, pendingIntentTemplate);
             remoteViews.setEmptyView(R.id.widget_list, R.id.widget_empty);
-            remoteViews.setInt(R.id.widget_list, "setBackgroundResource", R.color.material_grey_850);
-            remoteViews.setContentDescription(R.id.widget_list,context.getString(R.string.widget_cd));
+            remoteViews.setInt(R.id.widget_list, "setBackgroundResource", R.color.material_grey);
+            remoteViews.setInt(R.id.widget_content, "setBackgroundResource", R.color.material_grey);
+            remoteViews.setContentDescription(R.id.widget_list, context.getString(R.string.widget_cd));
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);

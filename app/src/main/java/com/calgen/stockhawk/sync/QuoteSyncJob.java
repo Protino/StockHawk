@@ -157,10 +157,8 @@ public final class QuoteSyncJob {
                     .bulkInsert(
                             Contract.Quote.uri,
                             quoteCVs.toArray(new ContentValues[quoteCVs.size()]));
-
-            Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
-            context.sendBroadcast(dataUpdatedIntent);
             if (!invalidFlag) setStockStatus(context, STOCK_STATUS_OK);
+            updateWidget(context);
         } catch (IOException exception) {
             Timber.e(exception, "Error fetching stock quotes");
             setStockStatus(context, STOCK_STATUS_SERVER_DOWN);
@@ -168,6 +166,11 @@ public final class QuoteSyncJob {
             Timber.e(e, "Unknown Error");
             setStockStatus(context, STOCK_STATUS_UNKNOWN);
         }
+    }
+
+    public static void updateWidget(Context context) {
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+        context.sendBroadcast(dataUpdatedIntent);
     }
 
     private static void showErrorToast(final Context context, final String symbol) {

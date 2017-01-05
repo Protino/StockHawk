@@ -1,5 +1,6 @@
 package com.calgen.stockhawk.ui;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +30,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.swipe_refresh) public SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.error) public TextView error;
     @BindView(R.id.toolbar) public Toolbar toolbar;
-    @BindView(R.id.progressBarLayout) public LinearLayout progressBarLayout;
-    @BindView(R.id.content_main) public LinearLayout contentLayout;
     @BindView(R.id.activity_main) public CoordinatorLayout activityMainLayout;
     //@formatter:on
     private StockAdapter adapter;
@@ -67,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 showInternetOffSnackBar();
             } else {
                 if (snackbar != null) snackbar.dismiss();
-                hideLoadingLayout(false);
                 updateEmptyView();
+                swipeRefreshLayout.setRefreshing(true);
             }
         }
     };
@@ -87,20 +85,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setRefreshing(true);
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             QuoteSyncJob.initialize(this);
+            swipeRefreshLayout.setRefreshing(true);
+        }
         setUpDeletionOnSlide();
         getSupportActionBar().setTitle(R.string.app_name);
         getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
-    }
-
-    @Override
-    protected void onResume() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
         registerReceiver(broadcastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        super.onResume();
     }
 
 
@@ -134,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 int stockSize = PrefUtils.removeStock(MainActivity.this, symbol);
                 // TODO: 11/28/2016 Add undo action
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                QuoteSyncJob.updateWidget(MainActivity.this);
                 if (stockSize == 0) {
                     adapter.setCursor(null);
                     updateEmptyView();
@@ -178,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onRefresh() {
         if (BasicUtils.isNetworkUp(this)) {
             QuoteSyncJob.syncImmediately(this);
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(true);
         } else {
             swipeRefreshLayout.setRefreshing(false);
             showInternetOffSnackBar();
@@ -192,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onClick(View v) {
                 onRefresh();
-                if (!BasicUtils.isNetworkUp(getApplicationContext())) {
+                if (!BasicUtils.isNetworkUp(MainActivity.this)) {
                     showInternetOffSnackBar();
                 }
             }
@@ -211,19 +208,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        swipeRefreshLayout.setRefreshing(false);
         adapter.setCursor(data);
+        swipeRefreshLayout.setRefreshing(false);
         updateEmptyView();
-        if (data.getCount() == 0)
+        if (data.getCount() == 0) {
             supportStartPostponedEnterTransition();
-        else
+        } else {
             recyclerView.getViewTreeObserver().addOnPreDrawListener(this);
+        }
     }
 
+    @SuppressLint("SwitchIntDef")
     private void updateEmptyView() {
         swipeRefreshLayout.setVisibility(View.GONE);
-        hideLoadingLayout(false);
-        int message = R.string.error_no_stocks;
+        int message;
 
         if (adapter.getItemCount() == 0) {
             @QuoteSyncJob.StockStatus int status = PrefUtils.getStockStatus(this);
@@ -243,27 +241,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 default:
                     message = R.string.loading_data;
                     break;
-                case QuoteSyncJob.STOCK_STATUS_INVALID:
-                    break;
-                case QuoteSyncJob.STOCK_STATUS_OK:
-                    break;
             }
             if (!BasicUtils.isNetworkUp(this)) message = R.string.error_no_network;
             if (PrefUtils.getStocks(this).size() == 0) message = R.string.error_no_stocks;
             error.setText(message);
             error.setVisibility(View.VISIBLE);
-        } else if (!BasicUtils.isNetworkUp(this)) {
-            Toast.makeText(this, R.string.toast_no_connectivity, Toast.LENGTH_LONG).show();
         } else {
             swipeRefreshLayout.setRefreshing(false);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
         }
-        hideLoadingLayout(true);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        swipeRefreshLayout.setRefreshing(false);
         adapter.setCursor(null);
         updateEmptyView();
     }
@@ -272,7 +262,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (symbol != null && !symbol.isEmpty()) {
 
             if (BasicUtils.isNetworkUp(this)) {
-                hideLoadingLayout(false);
+                swipeRefreshLayout.setRefreshing(true);
+                swipeRefreshLayout.setVisibility(View.VISIBLE);
             } else {
                 String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -305,19 +296,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public boolean onPreDraw() {
         if (PrefUtils.getStocks(this).size() != 0) {
             if (recyclerView.getChildCount() > 0) {
+                swipeRefreshLayout.setRefreshing(false);
                 recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
                 supportStartPostponedEnterTransition();
-                hideLoadingLayout(true);
                 return true;
             }
             return false;
         }
         supportStartPostponedEnterTransition();
         return true;
-    }
-
-    private void hideLoadingLayout(boolean b) {
-        contentLayout.setVisibility(b ? View.VISIBLE : View.GONE);
-        progressBarLayout.setVisibility(b ? View.GONE : View.VISIBLE);
     }
 }

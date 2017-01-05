@@ -29,6 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:id="@+id/widget_content"
         android:orientation="vertical"
         tools:ignore="PrivateResource">
 
@@ -38,16 +39,17 @@
             android:layout_height="match_parent"
             android:divider="@null"
             android:dividerHeight="0dp"
+            android:visibility="gone"
             tools:listitem="@layout/list_item_quote"/>
 
         <TextView
             android:id="@+id/widget_empty"
+            style="@style/Base.TextAppearance.AppCompat.Subhead"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="sans-serif-condensed"
             android:gravity="center"
-            android:text="@string/empty_stock_list"
-            android:textAppearance="?android:textAppearanceLarge"/>
+            android:text="@string/empty_stock_list"/>
     </LinearLayout>
 
 </LinearLayout>
