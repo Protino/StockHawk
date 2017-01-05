@@ -41,6 +41,7 @@ import com.calgen.stockhawk.utils.BasicUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener,
@@ -64,9 +65,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             if (!BasicUtils.isNetworkUp(context)) {
                 showInternetOffSnackBar();
             } else {
+                swipeRefreshLayout.setRefreshing(true);
                 if (snackbar != null) snackbar.dismiss();
                 updateEmptyView();
-                swipeRefreshLayout.setRefreshing(true);
             }
         }
     };
@@ -97,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         registerReceiver(broadcastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_activity_settings, menu);
@@ -127,7 +127,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
                 int stockSize = PrefUtils.removeStock(MainActivity.this, symbol);
                 // TODO: 11/28/2016 Add undo action
-                getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                int x = getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                Timber.d(String.valueOf(x), "Deleted rows");
                 QuoteSyncJob.updateWidget(MainActivity.this);
                 if (stockSize == 0) {
                     adapter.setCursor(null);
@@ -294,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onPreDraw() {
-        if (PrefUtils.getStocks(this).size() != 0) {
+        if (adapter.getItemCount() != 0) {
             if (recyclerView.getChildCount() > 0) {
                 swipeRefreshLayout.setRefreshing(false);
                 recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);

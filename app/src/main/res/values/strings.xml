@@ -18,10 +18,9 @@
     <string name="WEEKLY" translatable="false">WEEKLY</string>
 
     <!--Default stock names-->
-    <string name="default_stocks_yahoo" translatable="false">YHOO</string>
+    <string name="default_stocks_google" translatable="false">GOOG</string>
     <string name="default_stocks_apple" translatable="false">AAPL</string>
     <string name="default_stocks_microsoft" translatable="false">MSFT</string>
-    <string name="default_stocks_facebook" translatable="false">FB</string>
 
     <!--Dialog related-->
     <string name="dialog_title">Add Stock</string>
