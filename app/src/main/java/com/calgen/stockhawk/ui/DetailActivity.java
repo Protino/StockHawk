@@ -140,19 +140,15 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             getWindow().getDecorView().setContentDescription(
                     String.format(getString(R.string.detail_activity_cd), stockName));
 
-            DecimalFormat dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
+            DecimalFormat dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.getDefault());
             dollarFormat.setMaximumFractionDigits(2);
             dollarFormat.setMinimumFractionDigits(2);
-            DecimalFormat dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
-            dollarFormatWithPlus.setMaximumFractionDigits(2);
-            dollarFormatWithPlus.setMinimumFractionDigits(2);
-            dollarFormatWithPlus.setPositivePrefix("+");
 
             tvStockExchange.setText(stockExchange);
             tvStockName.setText(stockName);
             tvStockPrice.setText(dollarFormat.format(stockPrice));
             tvStockPrice.setContentDescription(String.format(getString(R.string.stock_price_cd), tvStockPrice.getText()));
-            tvAbsoluteChange.setText(dollarFormatWithPlus.format(absolutionChange));
+            tvAbsoluteChange.setText(dollarFormat.format(absolutionChange));
             if (dayHighest != -1) {
                 tvDayHighest.setText(dollarFormat.format(dayHighest));
                 tvDayHighest.setContentDescription(String.format(getString(R.string.day_highest_cd), tvDayHighest.getText()));

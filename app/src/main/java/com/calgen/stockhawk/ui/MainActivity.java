@@ -146,13 +146,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             PrefUtils.toggleDisplayMode(this);
             setDisplayModeMenuItemIcon(item);
             adapter.notifyDataSetChanged();
-            BasicUtils.announceForAccessibilityCompact(
-                    this,
-                    getWindow().getDecorView()
-                            .findViewById(R.id.action_change_units),
-                    getClass().getName(),
-                    String.format(getString(R.string.display_mode_change_cd), PrefUtils.getDisplayMode(this)));
-            return true;
+            getWindow().getDecorView().findViewById(R.id.action_change_units)
+                    .announceForAccessibility(
+                            String.format(getString(R.string.display_mode_change_cd),
+                                    PrefUtils.getDisplayMode(this))
+                    );
         }
         return super.onOptionsItemSelected(item);
     }

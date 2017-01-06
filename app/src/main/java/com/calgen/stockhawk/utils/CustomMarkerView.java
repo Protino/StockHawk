@@ -41,7 +41,7 @@ public class CustomMarkerView extends MarkerView {
         date = new Date();
         this.finalEntry = finalEntry;
         this.referenceTime = referenceTime;
-        dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
+        dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.getDefault());
     }
 
     @Override
