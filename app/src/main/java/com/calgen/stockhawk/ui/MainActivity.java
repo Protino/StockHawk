@@ -41,8 +41,11 @@ import com.calgen.stockhawk.utils.BasicUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
+/**
+ * Launcher activity that handles, setup of recycler view to show list of stock data and
+ * initialize {@link QuoteSyncJob}.
+ */
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
@@ -126,9 +129,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
                 int stockSize = PrefUtils.removeStock(MainActivity.this, symbol);
-                // TODO: 11/28/2016 Add undo action
+                // TODO: 10/01/2017 Add undo action
                 int x = getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
-                Timber.d(String.valueOf(x), "Deleted rows");
                 QuoteSyncJob.updateWidget(MainActivity.this);
                 if (stockSize == 0) {
                     adapter.setCursor(null);
@@ -146,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             PrefUtils.toggleDisplayMode(this);
             setDisplayModeMenuItemIcon(item);
             adapter.notifyDataSetChanged();
+            //Announce accessibility when toggle mode is changed
             getWindow().getDecorView().findViewById(R.id.action_change_units)
                     .announceForAccessibility(
                             String.format(getString(R.string.display_mode_change_cd),

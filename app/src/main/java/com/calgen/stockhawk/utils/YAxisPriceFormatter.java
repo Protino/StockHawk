@@ -9,6 +9,7 @@ import java.util.Locale;
 
 /**
  * Created by Gurupad Mamadapur on 12/26/2016.
+ * Formats currency data.
  */
 public class YAxisPriceFormatter implements IAxisValueFormatter {
     private final DecimalFormat dollarFormat;

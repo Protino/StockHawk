@@ -34,6 +34,10 @@ import butterknife.ButterKnife;
 import icepick.Icepick;
 import icepick.State;
 
+/**
+ * Displays details of a particular selected by user. Sets up tabs using {@link ViewPager} and
+ * {@link TabLayout} to display historical data in charts.
+ */
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int PAGE_LIMIT = 2;
@@ -173,7 +177,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        dataLoaded=false;
+        dataLoaded = false;
     }
 
     public class ViewPagerAdapter extends FragmentPagerAdapter {

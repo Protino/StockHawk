@@ -11,10 +11,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Utility class to handle shared preferences access,deletion and addition.
+ */
 public final class PrefUtils {
-
-    private PrefUtils() {
-    }
 
     public static Set<String> getStocks(Context context) {
         String stocksKey = context.getString(R.string.pref_stocks_key);

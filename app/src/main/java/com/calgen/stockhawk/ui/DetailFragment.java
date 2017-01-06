@@ -40,6 +40,8 @@ import icepick.State;
 
 /**
  * Created by Gurupad Mamadapur on 12/27/2016.
+ *
+ * Placeholder fragment to display chart data of the stock
  */
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
