@@ -205,6 +205,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        //No action needed
     }
 }

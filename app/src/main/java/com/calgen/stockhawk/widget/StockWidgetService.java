@@ -33,7 +33,7 @@ public class StockWidgetService extends RemoteViewsService {
         //Lifecycle start
         @Override
         public void onCreate() {
-
+            //No action needed
         }
 
         @Override
@@ -44,7 +44,7 @@ public class StockWidgetService extends RemoteViewsService {
             }
 
         }
-//Lifecycle end
+        //Lifecycle end
 
         @Override
         public void onDataSetChanged() {
@@ -110,7 +110,6 @@ public class StockWidgetService extends RemoteViewsService {
 
         @Override
         public RemoteViews getLoadingView() {
-            // TODO: 1/1/2017 Create a simple loading view
             return null;
         }
 

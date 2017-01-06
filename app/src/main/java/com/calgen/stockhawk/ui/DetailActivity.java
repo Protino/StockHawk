@@ -177,6 +177,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        dataLoaded=false;
     }
 
     public class ViewPagerAdapter extends FragmentPagerAdapter {
