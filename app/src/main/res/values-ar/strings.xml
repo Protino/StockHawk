@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="http://schemas.android.com/tools">
+    <string name="app_name" translatable="false"> اسعار الاسهم</string>
+    <!--Default stock names-->
+    <string name="default_stocks_google" translatable="false">GOOG</string>
+    <string name="default_stocks_apple" translatable="false">AAPL</string>
+    <string name="default_stocks_microsoft" translatable="false">MSFT</string>
+
+    <string name="dialog_title">أضافة سهم جديد</string>
+    <string name="dialog_hint">اسم السهم - مثال (GOOG)</string>
+    <string name="dialog_cancel">الغاء</string>
+    <string name="dialog_add">اضافه</string>
+    <string name="title_activity_detail">سعر السهم مع مرور الوقت</string>
+    <string name="no_match">هذا السهم غير موجود!</string>
+
+    <!-- Error related strings-->
+    <string name="error_no_network">لا يوجد انترنت! سوف يتم التحديث عندما يعود الانترنت</string>
+    <string name="error_no_stocks">لا يوجد اسهم مضافة-اضغط ع الزر للاضافه</string>
+    <string name="toast_stock_added_no_connectivity">تم الاضافه -سوف يتم التحديث عن عودة الانترنت</string>
+    <string name="toast_no_connectivity">سوف يتم تحديث الاسهم عند عودة الانترت</string>
+    <string name="toast_stock_invalid">Symbol %s is invalid!</string>"
+    <string name="empty_stock_list">معلومات السهم غير متوفرة!</string>
+    <string name="error_server_down"> لا يوجد معومات عن السهم,الخادم لا يرجع اي معلومات</string>
+
+    <string name="error_server_invalid">لا يوجد معومات عن السهم,الخادم لا يرجع اي معلومات, من فضلك قم بتنصيب اخر تحديث للتطبيق</string>
+
+    <!-- Content description to provide accessibility-->
+    <string name="add_new_stock_cd">أضافه سهم جديد</string>
+    <string name="detail_activity_cd">تفاصيل السهم</string>
+    <string name="stock_price_cd">سعر السهم</string>
+    <string name="display_mode_cd">اختر ما بين القيمة المطلقه للسهم او نسبته</string>
+    <string name="display_mode_change_cd">طريقة عرض السهم تغيرت الي </string>
+    <string name="stock_increment_cd">زيادة ف سعر السهم بمقدار</string>
+    <string name="stock_decrement_cd">نقص سعر السهم بمقدار</string>
+    <string name="day_lowest_cd">اقل سعر للسهم اليوم</string>
+    <string name="day_highest_cd">أعلي سعر للسهم اليوم</string>
+    <string name="days_fragment_title">5 ايام</string>
+    <string name="weeks_fragment_title">5 اسابيع</string>
+    <string name="months_fragment_title">5 شهور</string>
+    <string name="try_again">حاول مرة اخري</string>
+
+</resources>
