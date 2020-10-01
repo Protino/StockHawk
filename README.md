@@ -56,6 +56,7 @@ What Will I Learn?
 * Implement search functionality to search for valid stock symbols.
 * Recode the whole `QuoteSyncJob`, by using `Retrofit` and `SyncAdapters`.
 * Try some `ORM` (Maybe GreenDAO), instead of `SQLITE`.
+* Trying to implement Room Database dor data Storage. 
 * Try fetching currency exchange rates and add it has an option or even
   better get the location and set it automatically.
 
